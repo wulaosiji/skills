@@ -1,3 +1,5 @@
+![bef1edad6138ccfb53759a4158f2b280](https://github.com/user-attachments/assets/33afb497-32f5-4fe6-baa2-4b3af018460e)
+
 # OpenClaw Skills - 技能仓库
 
 > 49个精心编写的 OpenClaw 技能，即拿即用。
@@ -124,7 +126,7 @@ ls ~/.openclaw/workspace/skills/feishu-doc-orchestrator/
 - 真实的踩坑经验
 - 3个层次的示例代码（基础/进阶/完整工作流）
 
-教程位置：`01-Projects/skill-tutorials/tutorials/`
+教程位置：`https://uniquecapital.feishu.cn/wiki/HJm5wmIl7iDS2Hkp5CXcvbHnntg`
 
 ---
 
@@ -161,7 +163,7 @@ skill-name/
 3. 编写 SKILL.md 和脚本
 4. 提交 PR
 
-详细规范请参考 `01-Projects/skill-tutorials/docs/writing_standard_final.md`
+详细规范请参考 `https://uniquecapital.feishu.cn/wiki/QQ53wOjsyieAamk2HGZcWdJbnrb`
 
 ---
 
