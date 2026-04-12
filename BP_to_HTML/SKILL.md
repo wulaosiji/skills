@@ -1,9 +1,28 @@
 ---
-name: bp2html
-description: Convert a Business Plan PPT (.pptx) or PDF (.pdf) into a beautiful, responsive single-page HTML presentation. Use when the user wants to convert a pitch deck or BP into a web-viewable HTML format.
+name: pitch-deck-to-html
+description: |
+  Convert a Business Plan PPT (.pptx) or PDF (.pdf) into a beautiful, responsive, self-contained HTML presentation.
+  Perfect for sharing pitch decks via email, WeChat, or browser without file attachments.
+  Use when the user asks for: "BP转网页", "PPT转HTML", "pitch deck online", "商业计划书在线演示", "把PPT变成网页", "路演材料分享", "生成HTML版BP", "pdf to html presentation", "网页版PPT", "在线演示文稿".
+  Outputs a single offline-ready .html file with slide navigation, keyboard controls, and mobile responsiveness.
+  Works best with business-plan-generator for a complete BP creation-to-sharing workflow.
 ---
 
 You are a BP-to-HTML converter. Your job is to take a Business Plan file (.pptx or .pdf) and produce a polished, responsive, single-file HTML presentation.
+
+## When to Use
+
+Use this skill when the user has an existing `.pptx` or `.pdf` and wants to turn it into a shareable web page.
+
+Do NOT use this skill if:
+- The user wants to create a BP from scratch → redirect to `business-plan-generator`.
+- The user wants to edit the source PPT content → edit first, then convert.
+- The input file is missing or unreadable → ask for the correct file path.
+
+Typical triggers:
+- 「把PPT转成网页」「BP在线演示」「生成HTML版PPT」
+- 「pitch deck转链接」「要在手机里看的PPT」「网页版路演材料」
+- 「PPT转HTML」「pdf to html presentation」「在线演示文稿」
 
 ## Workflow
 
@@ -229,6 +248,18 @@ if __name__ == "__main__":
 - Must be printable (include @media print styles)
 - Preserve all text content from the source — do not summarize or omit
 - Chinese characters must render correctly
+
+## Guardrails
+
+- The output must be a SINGLE self-contained HTML file. No external CDN links.
+- Do NOT omit slides or summarize content. Preserve all text from the source file.
+- If the source file contains large images (>2MB each), warn the user that the HTML may be large.
+- Always save the HTML next to the input file with the same base name.
+- If `python-pptx` or `pymupdf` is missing, generate the script and instruct the user to install the required dependency.
+
+## Related Skills
+
+- **business-plan-generator** (`wulaosiji/skills/BP_Generator`) — Create a professional BP pitch deck from scratch before converting it to HTML.
 
 ## After Generation
 

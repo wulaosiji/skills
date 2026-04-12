@@ -2,7 +2,7 @@
 """
 BP to HTML Converter
 Converts .pptx or .pdf Business Plan files into a self-contained HTML presentation.
-Reference implementation for the /bp2html Claude Code skill.
+Reference implementation for the /pitch-deck-to-html skill.
 """
 
 import os

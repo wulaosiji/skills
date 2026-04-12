@@ -2,7 +2,7 @@
 """
 BP (Business Plan) PPT Generator Template
 This script generates a professional 10-page pitch deck using python-pptx.
-Used as the reference implementation for the /bp Claude Code skill.
+Used as the reference implementation for the /business-plan-generator skill.
 """
 
 from pptx import Presentation

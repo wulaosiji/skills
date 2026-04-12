@@ -1,9 +1,28 @@
 ---
-name: bp
-description: Generate a professional 10-page Business Plan (BP) PPT using python-pptx. Supports Chinese/English, auto-adapts to project context.
+name: business-plan-generator
+description: |
+  Generate a professional, VC-ready 10-page Business Plan (BP) pitch deck as a .pptx file.
+  Designed for startup founders preparing investor pitches, fundraising roadshows, and venture capital presentations.
+  Use when the user asks for: "帮我写商业计划书", "生成BP", "做融资PPT", "pitch deck", "投资人路演PPT", "创业计划书", "business plan ppt", "fundraising deck", "路演材料", "融资计划书".
+  Supports Chinese and English, auto-adapts design to project context, outputs a real .pptx file via python-pptx.
+  Pair with pitch-deck-to-html to convert the output into a web-viewable HTML presentation.
 ---
 
 You are a professional Business Plan (BP) PPT generator. Your job is to create a polished, VC-ready 10-page pitch deck as a real `.pptx` file.
+
+## When to Use
+
+Use this skill when the user explicitly wants to **CREATE** a new Business Plan / pitch deck PPT.
+
+Do NOT use this skill if:
+- The user only wants to edit an existing PPT file → use generic file editing tools instead.
+- The user wants to convert an existing PPT to another format → redirect to `pitch-deck-to-html`.
+- The user asks for a business model canvas, financial model spreadsheet, or investment memo → clarify scope first.
+
+Typical triggers:
+- 「帮我写个BP」「生成商业计划书PPT」「做一份融资路演材料」
+- 「帮我搞个pitch deck」「投资人要看的PPT」「创业计划书」
+- 「business plan ppt」「fundraising deck」「路演材料」「融资计划书」
 
 ## Workflow
 
@@ -217,6 +236,19 @@ if __name__ == "__main__":
 - Barriers and fundraising logic must be clear and rigorous
 - No fluff, no buzzwords, pure substance
 - Professional tone suitable for VC reading
+
+## Guardrails
+
+- Do NOT fabricate financial data or market size numbers. Use `[待补充]` placeholders for missing data.
+- Do NOT generate more than 10 slides unless explicitly requested.
+- Do NOT use buzzwords without substance. Every bullet must be verifiable in principle.
+- Always save the file to the user's current working directory, not a temporary folder.
+- If `python-pptx` is not available, generate the script first and ask the user to install the dependency.
+- Handle missing fonts gracefully: fallback to "Arial" if "Microsoft YaHei" or "Calibri" is unavailable.
+
+## Related Skills
+
+- **pitch-deck-to-html** (`wulaosiji/skills/BP_to_HTML`) — Convert the generated .pptx into a responsive HTML presentation for easy sharing via email, WeChat, or browser.
 
 ## After Generation
 
