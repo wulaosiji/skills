@@ -134,11 +134,19 @@ def extract_from_pptx(filepath):
 # ============================================================
 
 def extract_from_pdf(filepath):
-    """Extract page content from a .pdf file."""
+    """Extract page content from a .pdf file.
+
+    Strategy: For design-heavy PDFs (like pitch decks), each page is often
+    a single full-page image. We detect this and use a page-render approach
+    to get a clean screenshot of each page instead of extracting individual
+    image fragments.
+    """
     import fitz  # pymupdf
 
     doc = fitz.open(filepath)
     slides = []
+    page_w = doc[0].rect.width if len(doc) > 0 else 612
+    page_h = doc[0].rect.height if len(doc) > 0 else 792
 
     for page_idx in range(len(doc)):
         page = doc[page_idx]
@@ -147,11 +155,13 @@ def extract_from_pdf(filepath):
             "texts": [],
             "images": [],
             "tables": [],
-            "shapes": []
+            "shapes": [],
+            "is_image_page": False
         }
 
         # Extract text blocks
         blocks = page.get_text("dict")["blocks"]
+        text_char_count = 0
         for block in blocks:
             if block["type"] == 0:  # Text block
                 for line in block.get("lines", []):
@@ -159,6 +169,7 @@ def extract_from_pdf(filepath):
                         text = span["text"].strip()
                         if not text:
                             continue
+                        text_char_count += len(text)
                         font_size = span["size"]
                         is_bold = "bold" in span["font"].lower() or "heavy" in span["font"].lower()
 
@@ -184,38 +195,63 @@ def extract_from_pdf(filepath):
                             "top": span["bbox"][1],
                             "left": span["bbox"][0]
                         })
-            elif block["type"] == 1:  # Image block
-                try:
-                    img_data = block.get("image", None)
-                    if img_data:
-                        b64 = base64.b64encode(img_data).decode("utf-8")
-                        ext = block.get("ext", "png")
-                        mime = f"image/{ext}" if ext != "jpg" else "image/jpeg"
-                        slide_data["images"].append({
-                            "data_uri": f"data:{mime};base64,{b64}",
-                            "width": block["width"],
-                            "height": block["height"]
-                        })
-                except:
-                    pass
 
-        # Extract images via get_images for better coverage
-        for img_info in page.get_images(full=True):
+        # Check if this page has embedded images that cover most of the page
+        page_images = page.get_images(full=True)
+        has_large_image = False
+        for img_info in page_images:
             try:
                 xref = img_info[0]
                 base_image = doc.extract_image(xref)
                 if base_image:
-                    b64 = base64.b64encode(base_image["image"]).decode("utf-8")
-                    mime = base_image["ext"]
-                    if mime == "jpg":
-                        mime = "jpeg"
-                    slide_data["images"].append({
-                        "data_uri": f"data:image/{mime};base64,{b64}",
-                        "width": base_image.get("width", 400),
-                        "height": base_image.get("height", 300)
-                    })
+                    iw = base_image.get("width", 0)
+                    ih = base_image.get("height", 0)
+                    # If image is large (likely a full-page background), flag it
+                    if iw > page_w * 0.8 and ih > page_h * 0.8:
+                        has_large_image = True
+                        break
             except:
                 pass
+
+        # Decision: render full page as image if it's image-heavy
+        # (has large background image, or very little extractable text)
+        if has_large_image or text_char_count < 30:
+            # Render the entire page as a high-quality image
+            mat = fitz.Matrix(2.0, 2.0)  # 2x zoom for crisp rendering
+            pix = page.get_pixmap(matrix=mat)
+            img_bytes = pix.tobytes("png")
+            b64 = base64.b64encode(img_bytes).decode("utf-8")
+            slide_data["images"] = [{
+                "data_uri": f"data:image/png;base64,{b64}",
+                "width": pix.width,
+                "height": pix.height,
+                "is_fullpage": True
+            }]
+            slide_data["is_image_page"] = True
+            # Keep texts for accessibility/search but they won't be primary display
+        else:
+            # Text-heavy page: extract individual images normally (deduplicated)
+            seen_xrefs = set()
+            for img_info in page_images:
+                try:
+                    xref = img_info[0]
+                    if xref in seen_xrefs:
+                        continue
+                    seen_xrefs.add(xref)
+                    base_image = doc.extract_image(xref)
+                    if base_image:
+                        b64 = base64.b64encode(base_image["image"]).decode("utf-8")
+                        mime = base_image["ext"]
+                        if mime == "jpg":
+                            mime = "jpeg"
+                        slide_data["images"].append({
+                            "data_uri": f"data:image/{mime};base64,{b64}",
+                            "width": base_image.get("width", 400),
+                            "height": base_image.get("height", 300),
+                            "is_fullpage": False
+                        })
+                except:
+                    pass
 
         slide_data["texts"].sort(key=lambda t: (t.get("top", 0), t.get("left", 0)))
         slides.append(slide_data)
@@ -283,7 +319,20 @@ SLIDE_TYPE_CLASSES = {
 def build_slide_html(slide_data, slide_type, index, total):
     """Build HTML for a single slide."""
     css_class = SLIDE_TYPE_CLASSES.get(slide_type, "slide-generic")
+    is_image_page = slide_data.get("is_image_page", False)
+
     parts = []
+
+    # Full-page image mode: image IS the slide content
+    if is_image_page and slide_data["images"]:
+        img = slide_data["images"][0]
+        parts.append(f'<div class="slide slide-fullimage {css_class}" data-index="{index}">')
+        parts.append(f'<img src="{img["data_uri"]}" class="fullpage-img" alt="Slide {index + 1}" loading="lazy">')
+        parts.append(f'<div class="slide-number-overlay">{index + 1}</div>')
+        parts.append('</div>')
+        return "\n".join(parts)
+
+    # Normal text-based slide
     parts.append(f'<div class="slide {css_class}" data-index="{index}">')
     parts.append('<div class="slide-inner">')
 
@@ -473,6 +522,30 @@ body {{
   padding: 50px 60px;
   height: 100%;
   position: relative;
+}}
+
+/* Full-page image slide (design PDFs) */
+.slide-fullimage {{
+  padding: 0 !important;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}}
+.fullpage-img {{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}}
+.slide-number-overlay {{
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.35);
+  pointer-events: none;
 }}
 
 /* Cover slide */
