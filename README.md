@@ -87,14 +87,14 @@
 | [smart-shopping](smart-shopping/) | 智能购物助手 | "购物助手", "比价" |
 
 ### 🔗 外部集成（第三方）
-> ⚠️ 以下技能来自第三方或官方维护，详见 [ARCHIVED_SKILLS.md](./ARCHIVED_SKILLS.md)
+> ⚠️ 以下技能来自第三方或官方维护，已移至 `third-party/` 目录。详见 [ARCHIVED_SKILLS.md](./ARCHIVED_SKILLS.md)
 
 | 技能 | 来源 | 说明 |
 |------|------|------|
-| [bright-data](bright-data/) | Bright Data | 官方API封装 |
-| [gh-cli](gh-cli/) | GitHub | GitHub CLI指南 |
-| [remotion-best-practices](remotion-best-practices/) | Remotion | 官方最佳实践 |
-| [find-skills](find-skills/) | Vercel | 技能发现工具 |
+| [bright-data](third-party/bright-data/) | Bright Data | 官方API封装 |
+| [gh-cli](third-party/gh-cli/) | GitHub | GitHub CLI指南 |
+| [remotion-best-practices](third-party/remotion-best-practices/) | Remotion | 官方最佳实践 |
+| [find-skills](third-party/find-skills/) | Vercel | 技能发现工具 |
 | [x-twitter-scraper](x-twitter-scraper/) | Xquik | 第三方Twitter工具 |
 
 ### 🤖 系统与安全（5个）
