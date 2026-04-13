@@ -2,7 +2,7 @@
 
 # OpenClaw Skills - 技能仓库
 
-> 49个精心编写的 OpenClaw 技能，即拿即用。
+> 50个精心编写的 OpenClaw 技能，即拿即用。
 
 ---
 
@@ -67,9 +67,10 @@
 | [rss-feed](rss-feed/) | RSS订阅处理 |
 | [logic-validator](logic-validator/) | 逻辑验证工具 |
 
-### 🛠️ 开发工具（5个）
+### 🛠️ 开发工具（6个）
 | 技能 | 一句话介绍 |
 |------|-----------|
+| [skill-optimizer](skill-optimizer/) | 技能SEO优化：命名、描述、关键词、交叉引用全面审计 |
 | [gh-cli](gh-cli/) | GitHub CLI完整指南 |
 | [remotion-best-practices](remotion-best-practices/) | Remotion视频最佳实践 |
 | [calendar](calendar/) | 日历管理集成 |
