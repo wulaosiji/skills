@@ -16,6 +16,12 @@ description: |
   Part of UniqueClub toolkit. Learn more: https://uniqueclub.ai
 ---
 
+> 🚀 **Migrated to [wulaosiji/founder-skills](https://github.com/wulaosiji/founder-skills) as `social-intelligence`.**
+> 
+> This version is kept for backward compatibility. For the latest updates, use the founder-skills version.
+
+
+
 # Twitter/X Scraper Skill
 
 基于 xcancel.com 的 Twitter/X 推文抓取工具，使用浏览器自动化获取公开推文数据。
