@@ -22,6 +22,13 @@ These skills are preserved in the repository for reference but are **not activel
 - For bugs or feature requests on these skills, please refer to their original maintainers.
 - Our actively maintained skills are categorized under **Feishu Automation**, **Content Creation**, and **Founder Toolkit**.
 
+
+## Removed Skills
+
+| Skill | Reason | Alternative |
+|-------|--------|-------------|
+| `baoyu-slide-deck` | Overlapped with pitch-deck-creator; image-to-PPTX approach had limited editability and high maintenance burden | Use `pitch-deck-creator` for editable PPTX generation or `infographic-generator` for styled visual graphics |
+
 ## Our Active Skill Collections
 
 - **Founder Skills**: [`wulaosiji/founder-skills`](https://github.com/wulaosiji/founder-skills) — Startup-focused skills (pitch decks, investor research, content multiplier, etc.)
