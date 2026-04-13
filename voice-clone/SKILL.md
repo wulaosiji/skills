@@ -1,44 +1,52 @@
 ---
 name: voice-clone
-description: 使用 WaveSpeed AI MiniMax Voice Clone API 克隆声音并生成语音。支持吴娜等特定人物的声音克隆。
+description: |
+  Voice cloning and synthesis skill using WaveSpeed AI MiniMax Voice Clone API.
+  Create custom voices from 5-20 second audio samples and generate speech.
+  Supports Wu Na and other specific character voices with high-quality synthesis.
+
+  Use when: 语音克隆, 声音克隆, AI语音合成, 克隆声音, 语音生成, 
+  voice cloning, voice synthesis, AI speech, clone voice, 
+  generate speech, text to speech, MiniMax voice
+
+  Related: whisper-stt, video-generation
+
+  Part of UniqueClub toolkit. Learn more: https://uniqueclub.ai
 ---
 
-# 声音克隆技能
+# 声音克隆技能 (Voice Clone)
 
-本技能指导如何使用 WaveSpeed AI 的 MiniMax Voice Clone 服务进行声音克隆和语音合成。
+使用 WaveSpeed AI 的 MiniMax Voice Clone 服务进行声音克隆和语音合成。
 
----
+## When to Use
 
-## 1. 功能概述
+**适用于以下场景：**
+- 需要克隆特定人物的声音
+- 使用克隆声音生成口播内容
+- 创建个性化的语音助手
+- 批量生成配音内容
+- 与 STT 结合实现语音交互
 
-- **声音克隆**：从 5-20 秒音频样本创建自定义声音
-- **语音合成**：使用克隆的声音生成任意文本的语音
-- **云端服务**：无需本地安装，API 直接调用
+**Do NOT use this skill if:**
+- 音频样本质量差（有噪音、背景音乐、多人声）
+- 样本时长不在 5-20 秒范围内
+- 需要实时语音合成（有一定延迟）
+- 涉及版权或隐私问题的声音克隆
+- 需要极高精度的情感控制（当前 API 不直接支持）
 
----
+**触发关键词 / Trigger Phrases:**
+- 语音克隆 / voice cloning
+- 声音克隆 / voice clone
+- AI语音合成 / AI voice synthesis
+- 克隆声音 / clone voice
+- 语音生成 / voice generation
+- 生成语音 / generate speech
+- 文字转语音 / text to speech
+- MiniMax声音 / MiniMax voice
 
-## 2. API 配置
+## Workflow
 
-### 基础配置
-
-```python
-import requests
-import base64
-import os
-import time
-
-# API 配置
-WAVESPEED_KEY = os.getenv("WAVESPEED_KEY", "b9c67f3def268385bb9734970b11531f12ea24ae0d153859242e48ae46227668")
-BASE_URL = "https://api.wavespeed.ai/api/v3"
-HEADERS = {"Authorization": f"Bearer {WAVESPEED_KEY}"}
-JSON_HEADERS = {**HEADERS, "Content-Type": "application/json"}
-```
-
----
-
-## 3. 核心工作流
-
-### 3.1 克隆声音（首次使用）
+### 1. 克隆声音（首次使用）
 
 ```python
 def clone_voice(audio_path, voice_id, text="我是克隆的声音，很高兴为你服务。"):
@@ -53,6 +61,14 @@ def clone_voice(audio_path, voice_id, text="我是克隆的声音，很高兴为
     Returns:
         request_id: 任务ID，用于查询结果
     """
+    import requests
+    import base64
+    
+    WAVESPEED_KEY = "your_api_key"
+    BASE_URL = "https://api.wavespeed.ai/api/v3"
+    HEADERS = {"Authorization": f"Bearer {WAVESPEED_KEY}"}
+    JSON_HEADERS = {**HEADERS, "Content-Type": "application/json"}
+    
     # 读取音频并转为 base64
     with open(audio_path, 'rb') as f:
         audio_base64 = base64.b64encode(f.read()).decode('utf-8')
@@ -77,7 +93,7 @@ def clone_voice(audio_path, voice_id, text="我是克隆的声音，很高兴为
         raise Exception(f"克隆失败: {result}")
 ```
 
-### 3.2 使用克隆的声音生成语音
+### 2. 使用克隆的声音生成语音
 
 ```python
 def generate_speech(text, voice_id, model="speech-02-hd"):
@@ -108,7 +124,7 @@ def generate_speech(text, voice_id, model="speech-02-hd"):
         raise Exception(f"生成失败: {result}")
 ```
 
-### 3.3 查询任务结果
+### 3. 查询任务结果
 
 ```python
 def poll_result(request_id, timeout=60):
@@ -122,6 +138,8 @@ def poll_result(request_id, timeout=60):
     Returns:
         audio_url: 音频下载URL
     """
+    import time
+    
     url = f"{BASE_URL}/predictions/{request_id}/result"
     start_time = time.time()
     
@@ -142,33 +160,11 @@ def poll_result(request_id, timeout=60):
     raise TimeoutError("任务超时")
 ```
 
-### 3.4 下载音频
-
-```python
-def download_audio(audio_url, output_path):
-    """
-    下载音频文件
-    
-    Args:
-        audio_url: 音频URL
-        output_path: 保存路径
-    """
-    response = requests.get(audio_url, stream=True)
-    with open(output_path, 'wb') as f:
-        for chunk in response.iter_content(chunk_size=8192):
-            f.write(chunk)
-    return output_path
-```
-
----
-
-## 4. 完整使用示例
-
-### 示例1：克隆吴娜的声音并生成口播
+### 4. 完整使用示例
 
 ```python
 # 配置
-AUDIO_SAMPLE = "/Users/delta/.openclaw/workspace/01-Projects/career-coaching/03-completed/短视频学习/吴娜短视频样例.mp3"
+AUDIO_SAMPLE = "/path/to/sample.mp3"
 VOICE_ID = "wuna-001"
 KOUBO_TEXT = """我是外企面试官。2026年求职，你一定要学会用人工智能！
 不懂人工智能的简历直接被淘汰，会用的轻松拿下高薪offer！"""
@@ -178,7 +174,7 @@ print("步骤1: 克隆声音...")
 clone_request_id = clone_voice(AUDIO_SAMPLE, VOICE_ID)
 print(f"克隆任务已提交: {clone_request_id}")
 
-# 等待克隆完成（可选，克隆结果会自动保存 voice_id）
+# 等待克隆完成
 time.sleep(5)
 
 # 步骤2：使用克隆的声音生成语音
@@ -190,66 +186,16 @@ print(f"TTS任务已提交: {tts_request_id}")
 print("\n步骤3: 等待结果...")
 audio_url = poll_result(tts_request_id)
 print(f"音频URL: {audio_url}")
-
-# 步骤4：下载音频
-print("\n步骤4: 下载音频...")
-download_audio(audio_url, "/tmp/wuna_koubo.mp3")
-print("✅ 音频已保存")
 ```
 
-### 示例2：批量生成口播
-
-```python
-def batch_generate(voice_id, texts, output_dir="/tmp"):
-    """批量生成语音"""
-    results = []
-    
-    for i, text in enumerate(texts):
-        print(f"生成 {i+1}/{len(texts)}...")
-        
-        # 提交任务
-        request_id, _ = generate_speech(text, voice_id)
-        
-        # 等待结果
-        audio_url = poll_result(request_id, timeout=120)
-        
-        # 下载
-        output_path = f"{output_dir}/audio_{i+1:03d}.mp3"
-        download_audio(audio_url, output_path)
-        results.append(output_path)
-        
-        print(f"✅ 已保存: {output_path}")
-    
-    return results
-
-# 批量生成
-texts = [
-    "第一段口播文本...",
-    "第二段口播文本...",
-    "第三段口播文本...",
-]
-
-batch_generate("wuna-001", texts)
-```
-
----
-
-## 5. 已配置的声音
-
-| 声音ID | 来源 | 状态 | 说明 |
-|--------|------|------|------|
-| `wuna-001` | 吴娜短视频样例 | ✅ 可用 | 温柔知性带干练职业风格 |
-| `zhuoran-001` | 卓然 | ✅ 可用 | *** |
-
----
-
-## 6. 支持的模型
+## Supported Models
 
 ### 声音克隆
 - **端点**: `POST /api/v3/minimax/voice-clone`
 - **定价**: $0.5/次
 
 ### 语音合成
+
 | 模型 | 特点 | 延迟 |
 |------|------|------|
 | `speech-02-hd` | 高清音质 | 中等 |
@@ -257,9 +203,9 @@ batch_generate("wuna-001", texts)
 | `speech-2.6-hd` | 下一代高清，40+语言 | 中等 |
 | `speech-2.6-turbo` | 超低延迟 | 极低 |
 
----
+## Guardrails
 
-## 7. 音频样本要求
+### 音频样本要求
 
 - **格式**: MP3、WAV
 - **时长**: 5-20秒最佳
@@ -270,28 +216,14 @@ batch_generate("wuna-001", texts)
   - 单人声
   - 正常语速，避免喊叫或耳语
 
----
+### 已配置的声音
 
-## 8. 常见问题
+| 声音ID | 来源 | 状态 | 说明 |
+|--------|------|------|------|
+| `wuna-001` | 吴娜短视频样例 | ✅ 可用 | 温柔知性带干练职业风格 |
+| `zhuoran-001` | 卓然 | ✅ 可用 | 专业干练风格 |
 
-### Q: Voice ID 会过期吗？
-A: 会。创建的 voice_id 需在 7 天内至少使用一次，否则会被删除。
-
-### Q: 可以克隆多个人的声音吗？
-A: 可以。每个声音使用不同的 `custom_voice_id` 即可。
-
-### Q: 克隆后的声音可以跨模型使用吗？
-A: 可以。克隆的声音 ID 可用于所有 MiniMax Speech 模型（02 HD/Turbo、2.6 HD/Turbo）。
-
-### Q: 中文效果怎么样？
-A: 效果非常好，支持标准普通话，发音清晰自然。
-
-### Q: 可以控制语速和情感吗？
-A: 当前 API 不直接支持，可通过标点符号和文本结构调整节奏。
-
----
-
-## 9. 最佳实践
+### 最佳实践
 
 1. **音频样本质量**: 高质量的 10 秒样本比低质量的 1 分钟样本效果更好
 2. **唯一 Voice ID**: 使用有意义的命名（如 `wuna-001`、`zhangsan-voice`）
@@ -299,17 +231,36 @@ A: 当前 API 不直接支持，可通过标点符号和文本结构调整节奏
 4. **批量生成**: 先测试单条，效果满意后再批量
 5. **备份音频**: 保存好原始音频样本，voice_id 过期后可重新克隆
 
----
+### 常见问题
 
-## 10. 完整脚本
+| 问题 | 答案 |
+|------|------|
+| Voice ID 会过期吗？ | 会。创建的 voice_id 需在 7 天内至少使用一次，否则会被删除。 |
+| 可以克隆多个人的声音吗？ | 可以。每个声音使用不同的 `custom_voice_id` 即可。 |
+| 克隆后的声音可以跨模型使用吗？ | 可以。克隆的声音 ID 可用于所有 MiniMax Speech 模型。 |
+| 中文效果怎么样？ | 效果非常好，支持标准普通话，发音清晰自然。 |
+| 可以控制语速和情感吗？ | 当前 API 不直接支持，可通过标点符号和文本结构调整节奏。 |
 
-项目 `scripts/` 目录下的脚本：
+## Project Scripts
 
 | 脚本 | 功能 |
 |------|------|
 | `clone_voice.py` | 克隆声音样本 |
 | `generate_speech.py` | 使用克隆声音生成语音 |
 | `batch_generate.py` | 批量生成口播音频 |
+
+## Related Skills
+
+| 技能 | 关系 | 说明 |
+|------|------|------|
+| [whisper-stt](./whisper-stt) | 配套 | 语音转文字，可形成完整语音工作流 |
+| [video-generation](./video-generation) | 配套 | 可为视频添加克隆语音配音 |
+| [zhuoran-selfie](./zhuoran-selfie) | 参考 | 可配合生成口播视频 |
+
+## About UniqueClub
+
+Part of UniqueClub toolkit - AI-powered creative tools for voice synthesis and cloning.
+Learn more: https://uniqueclub.ai
 
 ---
 
