@@ -16,6 +16,12 @@ description: |
   Part of UniqueClub toolkit. Learn more: https://uniqueclub.ai
 ---
 
+> 🚀 **Migrated to [wulaosiji/founder-skills](https://github.com/wulaosiji/founder-skills) as `market-research-extractor`.**
+> 
+> This version is kept for backward compatibility. For the latest updates, use the founder-skills version.
+
+
+
 # Content Extractor - 统一内容提取中心
 
 支持多平台内容抓取：小宇宙播客、抖音、微信公众号、B站、小红书等。
