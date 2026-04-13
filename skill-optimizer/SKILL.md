@@ -51,10 +51,26 @@ read_file(path="<skill-path>/SKILL.md")
 Analyze the skill across 7 dimensions:
 
 #### 1. Naming Audit
-- **Check**: Is the name in `kebab-case` (lowercase, hyphen-separated)?
-- **Check**: Is it descriptive but concise (2-4 words ideally)?
-- **Check**: Does it avoid abbreviations that could be ambiguous?
-- **Red flags**: `bp-generator` → should be `business-plan-generator`
+
+**For skills.sh / MCP Marketplaces:**
+
+Based on analysis of top-performing skills on skills.sh:
+- ❌ **NO brand prefixes** — Top skills use descriptive names, not prefixes (e.g., `conventional-commit`, not `acme-conventional-commit`)
+- ✅ **Action + Object pattern** — Best performers: `git-workflow`, `create-readme`, `dotnet-backend-patterns`
+- ✅ **2-3 words optimal** — Short enough to remember, long enough to be descriptive
+- ✅ **Avoid abbreviations** — `business-plan-generator` > `bp-generator`
+
+**Checklist:**
+- [ ] Name is in `kebab-case` (lowercase, hyphen-separated)?
+- [ ] No underscores or camelCase?
+- [ ] Descriptive but concise (2-4 words ideally)?
+- [ ] Avoids abbreviations that could be ambiguous?
+- [ ] Can be discovered via keyword search without knowing the brand?
+
+**Red flags**: 
+- `bp-generator` → should be `business-plan-generator` or `pitch-deck-creator`
+- `uc-tool` → should be descriptive like `founder-daily-brief`
+- `myCompany-tool` → remove brand prefix, use `tool-function` pattern
 
 #### 2. Description Audit
 - **Check**: Does the description include **trigger keywords** in multiple languages?
@@ -89,6 +105,42 @@ Analyze the skill across 7 dimensions:
 - **Check**: Are there relevant tags in the YAML frontmatter?
 - **Check**: Is the file structure correct (SKILL.md + scripts/ + assets/)?
 - **Check**: Are there example conversations or usage patterns?
+
+### Step 2.5: Brand Strategy (For Skill Collections)
+
+If optimizing multiple related skills for a brand:
+
+#### Option A: Independent Skills (Recommended for skills.sh)
+- **Naming**: Use descriptive names without brand prefix
+  - ✅ `pitch-deck-creator`, `deck-web-converter`, `investor-research`
+  - ❌ `uc-pitch-deck`, `uc-deck-converter`
+
+- **Brand placement**:
+  - `description` field: "Part of [Brand] toolkit. Learn more: https://brand.com"
+  - End of SKILL.md: "This skill is part of the [Brand] collection"
+  - Cross-reference section: Link to other brand skills
+
+- **Discovery strategy**: 
+  - Each skill independently discoverable via keywords
+  - Create ONE "suite skill" with brand prefix as entry point
+  - Example: `unique-club-founder-kit` lists all brand skills
+
+#### Option B: Suite/Kit Skills
+Create a "meta skill" that serves as brand entry:
+
+```yaml
+name: unique-club-founder-kit  # Only skill with brand prefix
+description: |
+  The complete AI founder toolkit by Unique Club. 
+  Includes: pitch-deck-creator, deck-web-converter, investor-research...
+  Use when: 「AI创业工具包」「founder toolkit」「unique club」
+```
+
+This suite skill:
+- Establishes brand presence
+- Lists all related skills with install commands
+- Provides cross-skill workflows
+- Acts as "table of contents" for the brand
 
 ### Step 3: Generate Optimization Report
 
@@ -274,3 +326,37 @@ description: |
 - [ ] Tags are relevant and specific in YAML frontmatter
 - [ ] Example usage patterns are documented
 - [ ] Anti-patterns are explicitly called out
+
+## Submitting to skills.sh
+
+### Step 1: Prepare Your Skill
+Ensure your skill is in a public GitHub repository with this structure:
+```
+your-repo/
+├── SKILL.md          # Required
+├── README.md         # Optional but recommended
+└── scripts/          # Optional
+    └── ...
+```
+
+### Step 2: Submit
+```bash
+npx skills add <github-username>/<repo-name>
+```
+
+Example:
+```bash
+npx skills add wulaosiji/pitch-deck-creator
+```
+
+### Step 3: Verify
+- Search for your skill on https://skills.sh
+- Check that description renders correctly
+- Test install command works
+
+### Best Practices for skills.sh
+1. **No brand prefixes** in skill names (use `pitch-deck-creator`, not `acme-pitch-deck`)
+2. **Standalone functionality** — Each skill should work independently
+3. **Clear install path** — Document any required setup in SKILL.md
+4. **Cross-linking** — Mention related skills in description
+5. **One skill per repo** (or clearly separated in subdirectories)
