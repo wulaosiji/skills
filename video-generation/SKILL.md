@@ -1,42 +1,57 @@
 ---
 name: video-generation
-description: 使用 DeerAPI (WaveSpeed AI) 生成、处理和超分视频。用于创建 Hero 背景视频、视频链和 4K 超分。
+description: |
+  Advanced video generation and processing skill using WaveSpeed AI (DeerAPI).
+  Supports image-to-video, video continuation, video chains, and 4K upscaling.
+  Ideal for creating hero background videos, video loops, and high-quality video content.
+
+  Use when: AI视频生成, 图生视频, 视频超分, 4K视频, 视频续写, 视频链, 
+  AI video generation, image to video, video upscaling, 4K video, 
+  video continuation, video chain
+
+  Related: zhuoran-video-selfie, clawra-video-selfie, voice-clone
+
+  Part of UniqueClub toolkit. Learn more: https://uniqueclub.ai
 ---
 
-# 视频生成技能
+# 视频生成技能 (Video Generation)
 
-本技能指导如何使用 WaveSpeed AI 平台生成和处理视频，包括图生视频、视频续写、视频链生成和 4K 超分。
+使用 WaveSpeed AI 平台生成和处理视频，包括图生视频、视频续写、视频链生成和 4K 超分。
 
----
+## When to Use
 
-## 1. 支持的模型
+**适用于以下场景：**
+- 从图片生成动态视频（图生视频）
+- 视频超分到 4K/2K/1080p
+- 创建视频链（多段视频拼接）
+- Hero 背景视频制作
+- 视频续写和扩展
 
-### 图生视频 (Image-to-Video)
+**Do NOT use this skill if:**
+- 只需要简单的自拍视频（使用 zhuoran-video-selfie 或 clawra-video-selfie）
+- 需要实时视频生成（API 是异步的）
+- 没有参考图片或视频素材
+- 网络条件极差（需要上传/下载大文件）
 
-| 模型 | API 路径 | 时长 | 特点 |
-|------|---------|------|------|
-| Wan-2.2 | `wavespeed-ai/wan-2.2/i2v-480p` | 5s/8s | 高质量、支持长视频 |
-| Wan-2.2 720p | `wavespeed-ai/wan-2.2/i2v-720p` | 5s/8s | 更高分辨率 |
-| Hailuo 2.3 | `minimax/hailuo-2.3/i2v-standard` | 6s | 快速、效果好 |
-| Kling 1.6 | `kuaishou/kling-v1.6/i2v-pro` | 5s/10s | 稳定、细节丰富 |
+**触发关键词 / Trigger Phrases:**
+- AI视频生成 / AI video generation
+- 图生视频 / image to video
+- 视频超分 / video upscaling
+- 4K视频 / 4K video
+- 视频续写 / video continuation
+- 视频链 / video chain
+- 视频处理 / video processing
+- 生成视频 / generate video
 
-### 视频超分 (Video Upscaling)
+## Workflow
 
-| 模型 | API 路径 | 分辨率选项 |
-|------|---------|-----------|
-| Video Upscaler Pro | `wavespeed-ai/video-upscaler-pro` | 720p, 1080p, 2k, 4k |
-
----
-
-## 2. 基础工作流
-
-### 2.1 图生视频
+### 1. 图生视频 (Image-to-Video)
 
 ```python
 import requests
 import time
 
-API_KEY = "your_api_key"
+API_KEY="***"
 BASE_URL = "https://api.wavespeed.ai/api/v3"
 HEADERS = {"Authorization": f"Bearer {API_KEY}"}
 JSON_HEADERS = {**HEADERS, "Content-Type": "application/json"}
@@ -82,7 +97,7 @@ def download_video(video_url, output_path):
             f.write(chunk)
 ```
 
-### 2.2 视频超分到 4K
+### 2. 视频超分到 4K
 
 ```python
 # 1. 上传视频
@@ -103,19 +118,14 @@ task_data = r.json()["data"]
 # 3. 轮询并下载（同上）
 ```
 
----
-
-## 3. 视频链生成
+### 3. 视频链生成
 
 视频链是指通过视频续写技术，将多个短视频连接成一个连贯的长视频。
 
-### 核心概念
-
+**核心概念：**
 1. **首帧提取**: 使用 FFmpeg 提取视频最后一帧作为下一段的起始
 2. **视频续写**: 使用相同的 prompt 风格生成连贯的续集
 3. **视频拼接**: 使用 FFmpeg 无损拼接
-
-### 示例：4 段视频链
 
 ```python
 # 提取最后一帧
@@ -169,32 +179,34 @@ def concat_videos(video_list, output_path):
     subprocess.run(cmd, check=True)
 ```
 
----
+## Supported Models
 
-## 4. 项目脚本说明
+### 图生视频 (Image-to-Video)
 
-项目 `scripts/` 目录下的脚本：
+| 模型 | API 路径 | 时长 | 特点 |
+|------|---------|------|------|
+| Wan-2.2 | `wavespeed-ai/wan-2.2/i2v-480p` | 5s/8s | 高质量、支持长视频 |
+| Wan-2.2 720p | `wavespeed-ai/wan-2.2/i2v-720p` | 5s/8s | 更高分辨率 |
+| Hailuo 2.3 | `minimax/hailuo-2.3/i2v-standard` | 6s | 快速、效果好 |
+| Kling 1.6 | `kuaishou/kling-v1.6/i2v-pro` | 5s/10s | 稳定、细节丰富 |
 
-| 脚本 | 功能 |
-|------|------|
-| `generate_hero_video.py` | 从海报图生成 Hero 背景视频 |
-| `upscale_hero_video.py` | 将视频超分到 4K |
-| `generate_latest_chains.py` | 生成完整视频链 |
-| `wan_v1.py` ~ `wan_v4.py` | Wan 模型单段生成 |
-| `upscale_intro_native_4k.py` | Intro 视频超分 |
-| `upscale_loop_native_4k.py` | Loop 视频超分 |
+### 视频超分 (Video Upscaling)
 
----
+| 模型 | API 路径 | 分辨率选项 |
+|------|---------|-----------|
+| Video Upscaler Pro | `wavespeed-ai/video-upscaler-pro` | 720p, 1080p, 2k, 4k |
 
-## 5. 最佳实践
+## Guardrails
 
-### Prompt 编写
+### Prompt 编写建议
 
+**好的 prompt 结构：**
 ```
-# 好的 prompt 结构
 [动作描述], [氛围/风格], [细节], [效果]
+```
 
-# 示例
+**示例：**
+```
 "Gentle flowing motion with glowing particles moving slowly across the scene, 
 subtle pulsing neon light effects, ethereal and dreamy atmosphere, 
 smooth ambient movement, futuristic cyberpunk feeling"
@@ -216,9 +228,7 @@ smooth ambient movement, futuristic cyberpunk feeling"
 | 任务超时 | 增加 `max_attempts` 或检查 API 状态 |
 | 上传失败 | 检查文件大小限制（通常 500MB） |
 
----
-
-## 6. API 密钥配置
+### API 密钥配置
 
 将 API 密钥存储在环境变量或 `.env` 文件中：
 
@@ -227,12 +237,32 @@ smooth ambient movement, futuristic cyberpunk feeling"
 WAVESPEED_KEY=your_api_key_here
 ```
 
-```python
-import os
-API_KEY = os.getenv("WAVESPEED_KEY")
-```
-
 **注意**: 不要将 API 密钥硬编码在脚本中或提交到版本控制。
+
+## Project Scripts
+
+| 脚本 | 功能 |
+|------|------|
+| `generate_hero_video.py` | 从海报图生成 Hero 背景视频 |
+| `upscale_hero_video.py` | 将视频超分到 4K |
+| `generate_latest_chains.py` | 生成完整视频链 |
+| `wan_v1.py` ~ `wan_v4.py` | Wan 模型单段生成 |
+| `upscale_intro_native_4k.py` | Intro 视频超分 |
+| `upscale_loop_native_4k.py` | Loop 视频超分 |
+
+## Related Skills
+
+| 技能 | 关系 | 说明 |
+|------|------|------|
+| [zhuoran-video-selfie](./zhuoran-video-selfie) | 专用版本 | 卓然角色的自拍视频生成 |
+| [clawra-video-selfie](./clawra-video-selfie) | 专用版本 | Clawra角色的自拍视频生成 |
+| [voice-clone](./voice-clone) | 配套 | 可为视频添加克隆语音 |
+| [zhuoran-selfie](./zhuoran-selfie) | 参考 | 照片生成技能 |
+
+## About UniqueClub
+
+Part of UniqueClub toolkit - AI-powered creative tools for professional video generation.
+Learn more: https://uniqueclub.ai
 
 ---
 
