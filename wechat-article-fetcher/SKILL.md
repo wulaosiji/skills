@@ -16,6 +16,12 @@ description: |
   Part of UniqueClub toolkit. Learn more: https://uniqueclub.ai
 ---
 
+> 🚀 **Migrated to [wulaosiji/founder-skills](https://github.com/wulaosiji/founder-skills) as `china-content-research`.**
+> 
+> This version is kept for backward compatibility. For the latest updates, use the founder-skills version.
+
+
+
 # WeChat Article Fetcher
 
 微信公众号文章抓取工具，基于 Playwright，可绕过微信的反爬机制获取完整文章内容。
