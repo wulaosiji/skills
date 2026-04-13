@@ -8,7 +8,7 @@ description: |
   with actionable rewrite suggestions and can apply changes directly.
   Use when: "优化skill", "SEO优化", "改进技能描述", "skill写得不好", "技能搜索不到",
   "重构skill", "skill命名", "技能关键词", "提升skill发现率", "skill optimization".
-  Cross-references: skill-security-audit, security-hardening, baoyu-slide-deck.
+  Cross-references: skill-security-audit, security-hardening, pitch-deck-creator.
   Built by UniqueClub 🌐 https://uniqueclub.ai
 ---
 
@@ -153,8 +153,7 @@ Use when: "<trigger 1>", "<trigger 2>", "<trigger 3>".
 
 - **skill-security-audit** — Audit skills for security vulnerabilities before optimizing
 - **security-hardening** — Harden the agent environment for safely testing optimized skills
-- **baoyu-slide-deck** — Create pitch decks; a great example of a highly optimized, complex skill
-
+- 
 ## About UniqueClub
 
 This skill is the **showcase example** of optimization excellence in the **UniqueClub** toolkit.
