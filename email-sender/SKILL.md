@@ -1,37 +1,135 @@
 ---
 name: email-sender
 description: |
-  邮件发送工具，支持HTML模板邮件发送。用于发送格式化的邮件通知、报告等。
+  邮件发送统一封装工具，支持HTML模板邮件、纯文本邮件、附件发送。内置科技感邮件模板，支持浅色/深色主题自动切换。
   
-  特性：
-  - 支持纯文本和HTML邮件
-  - 内置科技感邮件模板
-  - 支持附件发送
-  - 自动处理VPN网络环境警告
+  Use when:
+  - 发送格式化邮件通知 send formatted email notifications
+  - 发送日报/周报等报告 send daily/weekly reports
+  - 带附件的邮件发送 send emails with attachments
+  - 营销邮件批量发送 batch marketing emails
+  - 会议邀请邮件 meeting invitations
+  - 系统通知邮件 system notifications
+  
+  Cross-references: document-hub, pdf, long-form-writer, rss-feed
+  
+  Part of UniqueClub toolkit. Learn more: https://uniqueclub.ai
 ---
 
 # Email Sender Skill
 
 邮件发送统一封装，支持HTML模板和纯文本。
 
-## 邮件发送规则（2026-03-04 更新）
+## When to Use
 
-### 强制规范
+### Use This Skill When
+- 需要发送格式化的HTML邮件
+- 发送带有品牌样式的营销邮件
+- 附件发送（报告、数据文件等）
+- 根据时间自动切换邮件主题（白天浅色/晚上深色）
+- 发送系统通知或日报/周报
+- 需要科技感设计风格的邮件
 
-**所有邮件必须遵循以下规则：**
+### Do NOT Use This Skill If
+- 需要发送大量邮件（可能触发SMTP限制）
+- 收件人邮箱服务器有严格过滤
+- 网络环境使用VPN/代理（会导致SSL错误）
+- 需要复杂的邮件模板定制（超出内置模板）
+
+### Typical Trigger Phrases
+**Chinese:**
+- "发送邮件"
+- "发封报告邮件"
+- "HTML邮件"
+- "科技感邮件模板"
+- "带附件的邮件"
+- "日报邮件"
+
+**English:**
+- "Send email"
+- "Email report"
+- "HTML email template"
+- "Send with attachment"
+- "Daily report email"
+- "Tech-style email"
+
+## Workflow
+
+### Step 1: 选择邮件类型
+| 函数 | 场景 | 特点 |
+|------|------|------|
+| `send_smart_email()` | 通用 | 自动根据时间选主题 |
+| `send_tech_email()` | 晚上/深色 | 科技感深色主题 |
+| `send_light_email()` | 白天/浅色 | 清爽浅色主题 |
+| `send_email()` | 简单 | 纯文本 |
+| `send_email_with_attachments()` | 附件 | 带文件 |
+
+### Step 2: 配置邮件参数
+```python
+required_params = {
+    "to_email": "recipient@example.com",
+    "subject": "邮件主题",
+    "title": "邮件标题",        # HTML模板用
+    "content": "邮件正文",       # HTML模板用
+}
+```
+
+### Step 3: 发送邮件
+```python
+from skills.email_sender.email_sender import send_smart_email
+
+send_smart_email(
+    to_email='user@example.com',
+    subject='AI日报',
+    title='今日热点',
+    content='<p>内容...</p>'
+)
+```
+
+### Step 4: 处理异常
+- 捕获网络错误
+- 处理SMTP认证失败
+- 记录发送日志
+
+## Guardrails
+
+### Email Sending Rules (Updated 2026-03-04)
+
+**强制规范:**
 
 1. **必须使用模板** - 不允许纯文本邮件
    - 白天 (6:00-18:00) → 使用浅色主题 `send_light_email()`
    - 晚上 (18:00-6:00) → 使用深色主题 `send_tech_email()`
 
-2. **必须包含广告** - 默认添加杭州大会广告
+2. **默认包含广告** - 默认添加杭州大会广告
    - 除非明确指定 `include_ad=False`
    - 广告位置：邮件内容底部
 
-### 智能时间判断函数
+### Network Environment
+⚠️ **重要**: 使用邮件功能时请保持**国内网络环境**
 
+- ✅ 国内直连: SMTP连接正常
+- ❌ VPN/代理: SSL握手会被飞书服务器拒绝
+
+**错误特征**:
+```
+SSL: UNEXPECTED_EOF_WHILE_READING
+EOF occurred in violation of protocol
+```
+
+**解决方案**: 关闭VPN，切换国内网络后重试。
+
+### Limitations
+- 依赖飞书SMTP服务器
+- 单账户有发送频率限制
+- 附件大小限制（通常25MB）
+- 不支持邮件追踪功能
+
+## Core Features
+
+### 1. 智能主题选择
 ```python
-from email_sender import send_smart_email
+from skills.email_sender.email_sender import send_smart_email
 
 # 自动根据当前时间选择主题（白天浅色/晚上深色）+ 默认广告
 send_smart_email(
@@ -42,118 +140,7 @@ send_smart_email(
 )
 ```
 
-### 手动指定主题
-
-```python
-# 强制使用深色（晚上）
-send_tech_email(
-    to_email='user@example.com',
-    subject='晚间报告',
-    title='今日回顾',
-    content='...',
-    # 自动包含广告
-)
-
-# 强制使用浅色（白天）
-send_light_email(
-    to_email='user@example.com',
-    subject='早报',
-    title='今日热点',
-    content='...',
-    # 自动包含广告
-)
-```
-
-### 例外情况
-
-如需无广告或纯文本，必须显式声明：
-
-```python
-# 无广告
-send_tech_email(
-    ...,
-    include_ad=False  # 明确去掉广告
-)
-
-# 纯文本（不推荐）
-send_email(
-    to_email='user@example.com',
-    subject='纯文本',
-    body='内容...'
-)
-```
-
----
-
-```python
-from skills.email_sender.email_sender import send_email, send_html_email, send_tech_email
-
-# 发送纯文本邮件
-send_email(
-    to_email="recipient@example.com",
-    subject="测试邮件",
-    body="这是一封测试邮件"
-)
-
-# 发送HTML邮件
-send_html_email(
-    to_email="recipient@example.com",
-    subject="HTML邮件",
-    html_body="<h1>标题</h1><p>内容</p>"
-)
-
-# 使用科技感模板发送
-send_tech_email(
-    to_email="recipient@example.com",
-    subject="AI日报",
-    title="今日AI热点",
-    content="邮件正文内容...",
-    highlights=["亮点1", "亮点2", "亮点3"]
-)
-```
-
-## 功能特性
-
-### 1. 纯文本邮件
-```python
-from skills.email_sender.email_sender import send_email
-
-send_email(
-    to_email="recipient@example.com",
-    subject="主题",
-    body="正文内容",
-    from_email="zhuoran@100aiapps.cn",  # 可选，默认从.env读取
-    password="your_password"  # 可选，默认从.env读取
-)
-```
-
-### 2. HTML邮件
-```python
-from skills.email_sender.email_sender import send_html_email
-
-html_content = """
-<!DOCTYPE html>
-<html>
-<head>
-    <style>
-        body { font-family: Arial, sans-serif; }
-    </style>
-</head>
-<body>
-    <h1>标题</h1>
-    <p>内容</p>
-</body>
-</html>
-"""
-
-send_html_email(
-    to_email="recipient@example.com",
-    subject="HTML邮件",
-    html_body=html_content
-)
-```
-
-### 3. 科技感模板邮件
+### 2. 深色科技感模板
 ```python
 from skills.email_sender.email_sender import send_tech_email
 
@@ -179,6 +166,19 @@ send_tech_email(
 )
 ```
 
+### 3. 浅色主题模板
+```python
+from skills.email_sender.email_sender import send_light_email
+
+send_light_email(
+    to_email="recipient@example.com",
+    subject='早报',
+    title='今日热点',
+    content='...',
+    # 自动包含广告
+)
+```
+
 ### 4. 带附件邮件
 ```python
 from skills.email_sender.email_sender import send_email_with_attachments
@@ -194,142 +194,90 @@ send_email_with_attachments(
 )
 ```
 
-## 配置信息
+### 5. 纯文本邮件（不推荐）
+```python
+from skills.email_sender.email_sender import send_email
+
+send_email(
+    to_email="recipient@example.com",
+    subject="测试邮件",
+    body="这是一封测试邮件"
+)
+```
+
+## Template Color Scheme
+
+| 元素 | 深色主题 | 浅色主题 |
+|------|----------|----------|
+| 主背景 | `#0a0a0f` | `#ffffff` |
+| 卡片背景 | `#12121a` | `#f5f5f5` |
+| 主色调 | `#00d4ff` | `#0066cc` |
+| 强调色 | `#ff6b35` | `#ff6b35` |
+| 文字 | `#e6e6e6` | `#1a1a1a` |
+| 次要文字 | `#888888` | `#666666` |
+
+## Configuration
 
 **SMTP配置**（自动从`~/.openclaw/.env`读取）：
 - 服务器: `smtp.feishu.cn:465`
 - 用户名: `zhuoran@100aiapps.cn`
 - 密码: `FEISHU_SMTP_PASSWORD`
 
-## 网络环境注意事项
+## Related Skills
 
-⚠️ **重要**：使用邮件功能时请保持**国内网络环境**
+| Skill | Relationship | Use Case |
+|-------|--------------|----------|
+| **document-hub** | 附件来源 | 生成Word/Excel附件 |
+| **pdf** | 附件来源 | 生成PDF报告附件 |
+| **long-form-writer** | 内容生成 | 生成邮件正文内容 |
+| **rss-feed** | 数据来源 | RSS内容作为邮件素材 |
 
-- ✅ 国内直连：SMTP连接正常
-- ❌ VPN/代理：SSL握手会被飞书服务器拒绝
+## Workflow Integration
 
-**错误特征**：
-```
-SSL: UNEXPECTED_EOF_WHILE_READING
-EOF occurred in violation of protocol
-```
-
-**解决方案**：关闭VPN，切换国内网络后重试。
-
-## 科技感邮件模板
-
-内置模板特点：
-- 深色科技感背景
-- 渐变色彩设计
-- 响应式布局
-- 支持高亮数据卡片
-- 移动端适配
-
-### 模板颜色方案
-| 元素 | 颜色 |
-|------|------|
-| 主背景 | `#0a0a0f` (深空黑) |
-| 卡片背景 | `#12121a` |
-| 主色调 | `#00d4ff` (科技蓝) |
-| 强调色 | `#ff6b35` (活力橙) |
-| 文字 | `#e6e6e6` |
-| 次要文字 | `#888888` |
-
-### 模板结构
-```html
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{title}}</title>
-    <style>
-        /* 科技感样式 */
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>{{title}}</h1>
-            <p class="subtitle">{{subtitle}}</p>
-        </div>
-        <div class="content">
-            {{content}}
-        </div>
-        <div class="highlights">
-            {{highlights}}
-        </div>
-        <div class="footer">
-            {{footer}}
-        </div>
-    </div>
-</body>
-</html>
-```
-
-## 完整示例
-
-### 发送AI日报
+### Workflow: 生成报告 → 发送邮件
 ```python
+from skills.long_form_writer import generate_report
 from skills.email_sender.email_sender import send_tech_email
 
+# 生成长文报告
+report = generate_report(data, template="daily")
+
+# 发送邮件
 send_tech_email(
-    to_email="team@100aiapps.cn",
-    subject="🦞 卓然AI早报 | 2026-03-04",
+    to_email="team@example.com",
+    subject="🦞 卓然AI日报",
     title="今日AI热点",
-    subtitle="2026年3月4日 周三",
-    content="""
-    <h2>🔥 头条新闻</h2>
-    <p>Claude登顶美区App Store榜首，用户发起"ChatGPT解约运动"...</p>
-    
-    <h2>💡 关键洞察</h2>
-    <p>美国AI军事化正在撕裂硅谷...</p>
-    """,
-    highlights=[
-        {"label": "政策", "value": "AI军事化加速"},
-        {"label": "市场", "value": "Claude登顶榜首"},
-        {"label": "数据", "value": "卸载量+295%"}
-    ],
-    footer="非凡产研 | 让AI更有价值"
+    content=report.html_content,
+    highlights=report.key_insights
 )
 ```
 
-### 发送会议邀请
+### Workflow: 生成PDF → 邮件附件
 ```python
-from skills.email_sender.email_sender import send_tech_email
+from skills.document_hub.document_hub import write
+from skills.email_sender.email_sender import send_email_with_attachments
 
-send_tech_email(
-    to_email="guest@example.com",
-    subject="会议邀请：AI产品策略讨论",
-    title="📅 会议邀请",
-    subtitle="非凡产研 · 战略会议",
-    content="""
-    <p>您好，诚邀您参加AI产品策略讨论会。</p>
-    
-    <div class="info-box">
-        <p><strong>时间：</strong>2026年3月5日 14:00</p>
-        <p><strong>地点：</strong>飞书会议</p>
-        <p><strong>议题：</strong>Q2产品规划</p>
-    </div>
-    """,
-    highlights=[
-        {"label": "会议ID", "value": "123-456-789"},
-        {"label": "密码", "value": "8888"}
-    ],
-    footer="非凡产研 | 战略部"
+# 生成报告文档
+write("report.docx", content)
+
+# 发送带附件邮件
+send_email_with_attachments(
+    to_email="client@example.com",
+    subject="月度报告",
+    body="请查收附件中的月度报告",
+    attachments=[("月度报告.docx", "./report.docx")]
 )
 ```
 
-## 依赖
+## Dependencies
 
 - Python 3.7+
-- 无需额外依赖（使用标准库）
+- 无需额外依赖（使用标准库 smtplib）
 
-## 更新日志
+## Changelog
 
 - **2026-03-04**: 初始版本，封装邮件发送功能，添加科技感HTML模板
 
----
+## About UniqueClub
 
-*邮件配置存储于 `~/.openclaw/.env`*
-*网络环境要求：国内直连（VPN会导致连接失败）*
+Part of the [UniqueClub](https://uniqueclub.ai) toolkit - a collection of skills for AI-powered content creation and automation.
