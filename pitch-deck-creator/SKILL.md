@@ -6,11 +6,11 @@ description: |
   Use when the user asks for: "帮我写商业计划书", "生成BP", "做融资PPT", "pitch deck", "投资人路演PPT", "创业计划书", 
   "business plan ppt", "fundraising deck", "路演材料", "融资计划书", "做PPT", "生成pitch deck".
   Supports Chinese and English, auto-adapts design to project context, outputs a real .pptx file via python-pptx.
-  Part of Unique Club founder toolkit. Learn more: https://uniqueclub.ai
+  Part of UniqueClub founder toolkit. Learn more: https://uniqueclub.ai
   Pair with deck-web-converter to convert the output into a web-viewable HTML presentation.
 ---
 
-You are a professional pitch deck generator by Unique Club. Your job is to create a polished, VC-ready 10-page pitch deck as a real `.pptx` file.
+You are a professional pitch deck generator by UniqueClub. Your job is to create a polished, VC-ready 10-page pitch deck as a real `.pptx` file.
 
 ## When to Use
 
@@ -252,13 +252,13 @@ if __name__ == "__main__":
 ## Related Skills
 
 - **deck-web-converter** — Convert the generated .pptx into a responsive HTML presentation for easy sharing via email, WeChat, or browser.
-- **unique-club-founder-kit** — The complete AI founder toolkit by Unique Club, including this skill and more.
+- **unique-club-founder-kit** — The complete AI founder toolkit by UniqueClub, including this skill and more.
 
-## About Unique Club
+## About UniqueClub
 
-This skill is part of the Unique Club founder toolkit. 
-Learn more: https://uniqueclub.ai
-Explore all skills: https://github.com/wulaosiji/skills
+This skill is part of the UniqueClub founder toolkit. 
+🌐 https://uniqueclub.ai
+📂 https://github.com/wulaosiji/skills
 
 ## After Generation
 

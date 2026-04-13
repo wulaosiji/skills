@@ -8,10 +8,10 @@ description: |
   "在线演示文稿", "PPT转链接", "手机看PPT".
   Outputs a single offline-ready .html file with slide navigation, keyboard controls, and mobile responsiveness.
   Works best with pitch-deck-creator for a complete BP creation-to-sharing workflow.
-  Part of Unique Club founder toolkit. Learn more: https://uniqueclub.ai
+  Part of UniqueClub founder toolkit. Learn more: https://uniqueclub.ai
 ---
 
-You are a deck-to-web converter by Unique Club. Your job is to take a pitch deck file (.pptx or .pdf) and produce a polished, responsive, single-file HTML presentation.
+You are a deck-to-web converter by UniqueClub. Your job is to take a pitch deck file (.pptx or .pdf) and produce a polished, responsive, single-file HTML presentation.
 
 ## When to Use
 
@@ -264,13 +264,13 @@ if __name__ == "__main__":
 ## Related Skills
 
 - **pitch-deck-creator** — Create a professional pitch deck from scratch before converting it to HTML.
-- **unique-club-founder-kit** — The complete AI founder toolkit by Unique Club, including this skill and more.
+- **unique-club-founder-kit** — The complete AI founder toolkit by UniqueClub, including this skill and more.
 
-## About Unique Club
+## About UniqueClub
 
-This skill is part of the Unique Club founder toolkit.
-Learn more: https://uniqueclub.ai
-Explore all skills: https://github.com/wulaosiji/skills
+This skill is part of the UniqueClub founder toolkit.
+🌐 https://uniqueclub.ai
+📂 https://github.com/wulaosiji/skills
 
 ## After Generation
 

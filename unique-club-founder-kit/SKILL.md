@@ -1,23 +1,23 @@
 ---
 name: unique-club-founder-kit
 description: |
-  The complete AI founder toolkit by Unique Club. A curated collection of skills for fundraising, content, growth, and automation.
+  The complete AI founder toolkit by UniqueClub. A curated collection of skills for fundraising, content, growth, and automation.
   Includes: pitch-deck-creator, deck-web-converter, content-multiplier, investor-research, founder-daily-brief, and more.
   Install this kit to bootstrap your startup with proven AI workflows.
-  Use when: 「AI创业工具包」「founder toolkit」「startup skills」「unique club」「创业者技能」「AI founder tools」「创业必备」
+  Use when: 「AI创业工具包」「founder toolkit」「startup skills」「uniqueclub」「创业者技能」「AI founder tools」「创业必备」
   Learn more: https://uniqueclub.ai
 ---
 
-# Unique Club Founder Kit
+# UniqueClub Founder Kit
 
 > The complete AI toolkit for startup founders. By founders, for founders.
 
-## 🎯 What is Unique Club?
+## 🎯 What is UniqueClub?
 
-**Unique Club** is a curated collection of AI skills designed specifically for startup founders and operators. From pitch decks to daily briefings, we provide the tools you need to move faster and think clearer.
+**UniqueClub** (https://uniqueclub.ai) is a curated collection of AI skills designed specifically for startup founders and operators. From pitch decks to daily briefings, we provide the tools you need to move faster and think clearer.
 
-Website: https://uniqueclub.ai  
-GitHub: https://github.com/wulaosiji/skills
+🌐 https://uniqueclub.ai  
+📂 https://github.com/wulaosiji/skills
 
 ---
 
@@ -180,4 +180,5 @@ Questions or feature requests?
 
 ---
 
-*Built with ❤️ by Unique Club*
+*Built with ❤️ by UniqueClub*  
+*🌐 https://uniqueclub.ai*

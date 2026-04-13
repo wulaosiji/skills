@@ -116,8 +116,8 @@ If optimizing multiple related skills for a brand:
   - ❌ `uc-pitch-deck`, `uc-deck-converter`
 
 - **Brand placement**:
-  - `description` field: "Part of [Brand] toolkit. Learn more: https://brand.com"
-  - End of SKILL.md: "This skill is part of the [Brand] collection"
+  - `description` field: "Part of UniqueClub toolkit. Learn more: https://uniqueclub.ai"
+  - End of SKILL.md: "This skill is part of the UniqueClub collection 🌐 https://uniqueclub.ai"
   - Cross-reference section: Link to other brand skills
 
 - **Discovery strategy**: 
@@ -131,9 +131,9 @@ Create a "meta skill" that serves as brand entry:
 ```yaml
 name: unique-club-founder-kit  # Only skill with brand prefix
 description: |
-  The complete AI founder toolkit by Unique Club. 
+  The complete AI founder toolkit by UniqueClub (https://uniqueclub.ai).
   Includes: pitch-deck-creator, deck-web-converter, investor-research...
-  Use when: 「AI创业工具包」「founder toolkit」「unique club」
+  Use when: 「AI创业工具包」「founder toolkit」「uniqueclub」
 ```
 
 This suite skill:
@@ -141,6 +141,7 @@ This suite skill:
 - Lists all related skills with install commands
 - Provides cross-skill workflows
 - Acts as "table of contents" for the brand
+- **Always include domain**: `https://uniqueclub.ai` for direct traffic
 
 ### Step 3: Generate Optimization Report
 

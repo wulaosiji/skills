@@ -10,7 +10,7 @@
 
 这是 **OpenClaw** 的官方技能仓库，包含 53 个可直接使用的自定义技能。
 
-特别推荐：[Unique Club 创业者工具包](unique-club-founder-kit/) - 专为 AI 创业者设计的融资、内容、增长一站式技能套件。
+特别推荐：[UniqueClub 创业者工具包](unique-club-founder-kit/) - 专为 AI 创业者设计的融资、内容、增长一站式技能套件。https://uniqueclub.ai
 
 每个技能都经过实战检验，配有完整的 SKILL.md 文档和使用教程。
 
@@ -43,12 +43,12 @@
 | [business-plan-generator](BP_Generator/) | 一键生成专业级10页商业计划书PPT（.pptx） |
 | [pitch-deck-to-html](BP_to_HTML/) | 将PPT/PDF商业计划书转为可在线浏览的HTML演示 |
 
-### 🚀 Unique Club 创业者工具包
-> 专为 AI 创业者设计的技能套件，覆盖融资、内容、增长全链路
+### 🚀 UniqueClub 创业者工具包
+> 专为 AI 创业者设计的技能套件，覆盖融资、内容、增长全链路 | https://uniqueclub.ai
 
 | 技能 | 一句话介绍 |
 |------|-----------|
-| [unique-club-founder-kit](unique-club-founder-kit/) | Unique Club 创业者All-in-One工具包入口 |
+| [unique-club-founder-kit](unique-club-founder-kit/) | UniqueClub 创业者All-in-One工具包入口 |
 | [pitch-deck-creator](pitch-deck-creator/) | 生成VC-ready融资PPT（skills.sh优化版） |
 | [deck-web-converter](deck-web-converter/) | PPT/PDF转网页演示，支持手机查看（skills.sh优化版） |
 
