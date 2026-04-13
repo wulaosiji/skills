@@ -6,7 +6,7 @@ description: |
   and coordinates within mainland China.
   Use when: "高德地图", "Amap导航", "中国地图", "Chinese navigation", "路线规划",
   "POI搜索", "geocoding China", "地址解析", "distance matrix", "location query".
-  Cross-references: baoyu-slide-deck, media_hub.
+  Cross-references: pitch-deck-creator, media_hub.
   Built by UniqueClub 🌐 https://uniqueclub.ai
 ---
 
@@ -25,7 +25,7 @@ Use this skill when:
 Do NOT use this skill if:
 - The location is outside mainland China → use global map services
 - The task is general travel advice without specific addresses or coordinates
-- You need map visualization slides → use **baoyu-slide-deck** for presentation output
+- You need map visualization slides → use **pitch-deck-creator** for presentation output
 
 Typical triggers:
 - 「查一下高德地图」「北京到上海路线」「附近餐厅搜索」
@@ -76,8 +76,7 @@ Return concise, user-friendly output in the user's preferred language:
 
 ## Related Skills
 
-- **baoyu-slide-deck** — Convert location data and travel plans into presentation slides
-- **media_hub** — Process location-based media such as travel videos or audio guides
+- - **media_hub** — Process location-based media such as travel videos or audio guides
 
 ## About UniqueClub
 
