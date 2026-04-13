@@ -1,101 +1,93 @@
 ---
 name: feishu-video-sender
-description: 飞书视频发送工具 - 直接调用API发送视频消息（非文件附件形式）
+description: |
+  飞书视频发送工具 / Feishu video message sender.
+  直接调用 API 发送视频消息，在飞书中以视频播放器形式展示（非文件附件）。
+
+  Use when: 发送视频消息, send video message, 飞书视频播放, feishu video player,
+  上传视频到飞书, upload video to feishu, 群视频分享, group video sharing,
+  视频封面生成, video cover generation, 私聊发视频, private video message,
+  富媒体消息, rich media message, 自动发视频, automated video delivery.
+
+  Related: feishu-voice-sender, feishu-group-welcome.
+  Part of the Feishu automation toolkit by UniqueClub.
 ---
+
 # Feishu Video Sender
 
-直接调用飞书API发送视频消息，支持私聊和群聊，视频以播放器形式展示（不是文件附件）。
+直接调用飞书 API 发送视频消息，支持私聊和群聊，视频以播放器形式展示（不是文件附件）。
 
-## 问题背景
+## When to Use
 
-使用OpenClaw的 `message` 工具发送视频时，视频会被当成普通文件附件发送，无法在飞书中直接播放。需要直接调用飞书API，使用 `msg_type: "media"` 才能正常显示视频播放器。
+- 需要发送可在飞书中直接播放的视频消息时
+- 使用标准 `message(filePath="video.mp4")` 导致视频变成不可播放的文件附件时
+- 需要自动生成视频封面并发送时
+- 需要向群聊或私聊分享视频内容时
 
-## 安装
+### Do NOT use this skill if
 
-```bash
-# 确保依赖安装
-pip3 install requests
+- 需要发送语音消息 → 使用 `feishu-voice-sender`
+- 只需要发送普通文件（不要求播放器形式）→ 使用标准 file 消息
+- 视频超过 100MB（可能超出 API 限制）→ 建议先压缩或上传到云盘分享链接
 
-# 确保ffmpeg安装（用于自动生成封面）
-brew install ffmpeg  # macOS
-# 或
-apt-get install ffmpeg  # Linux
-```
+### Typical Trigger Phrases
 
-## 使用方法
+- "发一个视频到飞书群"
+- "Send this video to Feishu chat"
+- "视频发出去变成文件了，帮我修复"
+- "上传视频并发送"
 
-### 命令行使用
+## Workflow
 
-```bash
-# 基础用法（自动生成封面）
-python3 skills/feishu-video-sender/feishu_video_sender.py \
-  /path/to/video.mp4 \
-  ou_5f3a4a920dc39a8d1835fd0085afef50
+1. **Ask for inputs**: 确认视频文件路径、目标 ID（`ou_xxx` 或 `oc_xxx`）、可选封面图路径、可选视频描述
+2. **Verify dependencies**: 确保已安装 `ffmpeg` 和 Python `requests`
+3. **Get token**: 获取飞书 `tenant_access_token`
+4. **Upload video**: 调用 `POST /open-apis/im/v1/files` 上传视频获取 `file_key`
+5. **Generate/upload cover**: 使用 `ffmpeg` 自动生成封面（第1秒画面），或上传用户指定的封面图获取 `image_key`
+6. **Send video**: 调用 `POST /open-apis/im/v1/messages`，使用 `msg_type: "media"` 发送
+   ```bash
+   python3 skills/feishu-video-sender/feishu_video_sender.py /path/to/video.mp4 ou_xxx
+   ```
+7. **Confirm delivery**: 返回消息 ID 和发送状态
 
-# 指定封面图
-python3 skills/feishu-video-sender/feishu_video_sender.py \
-  /path/to/video.mp4 \
-  oc_60c795e2e04eefc3d09eb49da4df15a5 \
-  /path/to/cover.jpg \
-  "视频描述文案"
-```
+## Guardrails
 
-### Python API调用
+- 飞书 API 对视频大小通常限制在 100MB 以内
+- 自动生成封面取视频第 1 秒画面，如需更好效果建议手动提供封面图
+- 必须使用 `msg_type: "media"` 才能在飞书中显示为可播放的视频
+
+## Python API
 
 ```python
 from skills.feishu_video_sender.feishu_video_sender import (
-    get_token, upload_video, upload_image, 
-    generate_cover, send_video
+    get_token, upload_video, upload_image, generate_cover, send_video
 )
 
-# 获取token
 token = get_token()
-
-# 上传视频
 file_key = upload_video("/path/to/video.mp4", token)
-
-# 生成/上传封面
 generate_cover("/path/to/video.mp4", "/tmp/cover.jpg")
 image_key = upload_image("/tmp/cover.jpg", token)
-
-# 发送视频
 message_id = send_video(
     file_key=file_key,
     image_key=image_key,
-    target_id="ou_xxx",  # 或 oc_xxx
+    target_id="ou_xxx",
     token=token,
-    msg_type="open_id"   # 或 "chat_id"
+    msg_type="open_id"
 )
 ```
 
-## 技术细节
-
-### 飞书API流程
-
-1. **获取token** → `tenant_access_token`
-2. **上传视频** → 获取 `file_key`
-   - 接口: `POST /open-apis/im/v1/files`
-   - 参数: `file_type=mp4`, `file_name=xxx.mp4`
-3. **上传封面** → 获取 `image_key`
-   - 接口: `POST /open-apis/im/v1/images`
-   - 参数: `image_type=message`
-4. **发送消息** → `msg_type: "media"`
-   - 接口: `POST /open-apis/im/v1/messages`
-   - 内容: `{"file_key": "...", "image_key": "..."}`
-
-### 与OpenClaw message工具对比
+## OpenClaw vs Direct API
 
 | 方式 | 代码 | 结果 |
 |------|------|------|
 | OpenClaw | `message(filePath="video.mp4")` | 文件附件，无法播放 |
-| 直接API | `msg_type="media"` + file_key + image_key | 视频播放器，可播放 |
+| 直接 API | `msg_type="media"` + file_key + image_key | 视频播放器，可播放 |
 
-## 限制
+## Related Skills
 
-- 视频大小限制：飞书API可能有大小限制（通常100MB以内）
-- 封面图：自动生成时取视频第1秒画面
-- 需要预装ffmpeg用于封面生成
+- [feishu-voice-sender](../feishu-voice-sender/) - 发送飞书语音消息
+- [feishu-group-welcome](../feishu-group-welcome/) - 群聊管理与消息发送
 
-## 更新记录
+## About
 
-- 2026-02-11: 初始版本，解决视频发送显示问题
+Part of the Feishu automation toolkit by UniqueClub. 🌐 https://uniqueclub.ai
