@@ -1,78 +1,70 @@
 ---
 name: feishu-chat-extractor
-description: Extract and analyze historical chat messages from Feishu/Lark groups. Use when needing to retrieve, process, or analyze group chat history, especially for OpenClaw/Clawdbot discussions. Handles pagination, time range filtering, and content extraction.
+description: |
+  Extract and analyze historical chat messages from Feishu/Lark groups.
+  提取并分析飞书群聊历史消息，支持分页、时间范围过滤和内容提取。
+
+  Use when: 提取聊天记录, extract chat history, 分析群消息, analyze group messages,
+  飞书聊天导出, feishu chat export, 消息历史检索, message history retrieval,
+  OpenClaw讨论分析, openclaw discussion analysis, 用户反馈收集, user feedback collection,
+  聊天数据报告, chat data report, 话题分类, topic categorization.
+
+  Related: feishu-chat-monitor, feishu-card-parser.
+  Part of the Feishu automation toolkit by UniqueClub.
 ---
 
 # Feishu Chat Extractor
 
 Extract and analyze historical messages from Feishu group chats.
 
-## When to Use This Skill
+## When to Use
 
-- Extract full chat history from a Feishu group
-- Filter messages by time range
-- Extract OpenClaw/Clawdbot-related discussions
-- Analyze user feedback and issues
-- Generate reports from chat data
+- 需要提取飞书群的完整聊天记录时
+- 需要按时间范围过滤和分析群消息时
+- 需要从聊天中提取 OpenClaw/Clawdbot 相关讨论时
+- 需要基于聊天数据生成用户反馈报告时
+- 需要对聊天内容进行关键词分析和话题分类时
 
-## Quick Start
+### Do NOT use this skill if
 
-### 1. Get Chat ID
+- 只需要检查最近是否有遗漏的 @提及 → 使用 `feishu-chat-monitor`
+- 需要发送消息或语音到群聊 → 使用 `feishu-voice-sender` 或 `feishu-video-sender`
+- 需要撤回已发送消息 → 使用 `feishu-message-recall`
 
-```python
-# Use existing chat_id or get from group
-CHAT_ID = "oc_b05242fd39d405d022fccab873d7df1b"  # Example
-```
+### Typical Trigger Phrases
 
-### 2. Extract Messages
+- "导出这个群的聊天记录"
+- "分析最近一周的群消息"
+- "Extract chat history from this Feishu group"
+- "帮我整理群里的用户反馈"
 
-```bash
-# Run extraction script
-python3 scripts/extract_chat.py --chat-id <CHAT_ID> --output chat_data.json
-```
+## Workflow
 
-### 3. Analyze Content
+1. **Ask for inputs**: 确认目标群聊 ID、时间范围、是否需要关键词过滤
+2. **Plan scope**: 确定提取范围（全部消息还是按关键词过滤）
+3. **Extract messages**: 运行提取脚本
+   ```bash
+   python3 scripts/extract_chat.py --chat-id <CHAT_ID> --output chat_data.json
+   ```
+4. **Handle pagination**: 自动处理分页，确保完整消息检索跨所有时间范围
+5. **Analyze content**: 运行分析脚本（如需要）
+   ```bash
+   python3 scripts/analyze_content.py --input chat_data.json --keywords openclaw,clawdbot,cron,mcp
+   ```
+6. **Validate data**: 检查消息数量、时间覆盖范围和数据完整性
+7. **Generate report**: 输出结构化报告并保存到工作区
 
-```bash
-# Extract OpenClaw-related messages
-python3 scripts/analyze_content.py --input chat_data.json --keywords openclaw,clawdbot,cron,mcp
-```
+## Guardrails
 
-## Core Workflow
-
-### Step 1: Plan (P)
-
-1. Identify target group and time range
-2. Determine extraction scope (all messages or filtered)
-3. Define analysis criteria (keywords, topics)
-
-### Step 2: Do (D)
-
-1. Run extraction script with appropriate parameters
-2. Handle pagination for large message volumes
-3. Save raw data to workspace
-
-### Step 3: Check (C)
-
-1. Verify message count matches expected
-2. Check time range coverage
-3. Validate data completeness
-4. Review sample messages for quality
-
-### Step 4: Act (A)
-
-1. Re-extract if data incomplete
-2. Filter and categorize messages
-3. Generate structured report
-4. Update documentation
+- **务必使用 `start_time` 和 `end_time` 参数**以确保完整提取，避免因保留策略导致分页遗漏
+- 提取完成后检查 `has_more` 字段，确保所有分页已处理
+- 保存中间结果以避免重复提取
+- 分析前验证数据完整性
+- 文档化提取参数以便结果可复现
 
 ## Key Techniques
 
-### Time Range Extraction (Critical)
-
-**Problem**: Default pagination may miss messages due to retention policies.
-
-**Solution**: Use `start_time` and `end_time` parameters:
+### Time Range Extraction
 
 ```python
 params = {
@@ -84,102 +76,25 @@ params = {
 }
 ```
 
-This ensures complete message retrieval across any time span.
-
 ### Pagination Handling
 
 ```python
 all_messages = []
 page_token = None
-
 while True:
     params["page_token"] = page_token
     result = fetch_messages(params)
     all_messages.extend(result["items"])
-    
     if not result["has_more"]:
         break
     page_token = result["page_token"]
 ```
 
-### Content Filtering
+## Related Skills
 
-Filter by message type:
-- `text` - Text messages
-- `post` - Rich text posts
-- `image` - Images
-- `vote` - Polls
+- [feishu-chat-monitor](../feishu-chat-monitor/) - 检查遗漏的 @提及消息
+- [feishu-card-parser](../feishu-card-parser/) - 解析飞书卡片消息为可读文本
 
-## Scripts
+## About
 
-### extract_chat.py
-
-Main extraction script. See `scripts/extract_chat.py` for full implementation.
-
-Key features:
-- Automatic pagination
-- Time range filtering
-- Progress logging
-- Error retry logic
-
-### analyze_content.py
-
-Content analysis script. See `scripts/analyze_content.py` for full implementation.
-
-Key features:
-- Keyword extraction
-- Topic categorization
-- Report generation
-
-## API Reference
-
-### Get Chat History
-
-```
-GET https://open.feishu.cn/open-apis/im/v1/messages
-```
-
-Parameters:
-- `container_id` (required): Chat ID
-- `container_id_type`: "chat"
-- `start_time`: Start timestamp (seconds)
-- `end_time`: End timestamp (seconds)
-- `page_size`: 1-50 (default 50)
-- `page_token`: For pagination
-
-### Common Error Codes
-
-- `232006`: Invalid chat_id
-- `232011`: Not in group
-- `232025`: Bot capability not enabled
-
-## Best Practices
-
-1. **Always use time ranges** for complete extraction
-2. **Check has_more** and paginate properly
-3. **Save intermediate results** to avoid re-extraction
-4. **Validate data** before analysis
-5. **Document extraction parameters** for reproducibility
-
-## Output Format
-
-```json
-{
-  "chat_id": "oc_xxx",
-  "extraction_time": "2026-02-06T17:00:00Z",
-  "total_messages": 953,
-  "time_range": {
-    "start": "2026-01-27",
-    "end": "2026-02-06"
-  },
-  "messages": [
-    {
-      "message_id": "om_xxx",
-      "create_time": 1769500000000,
-      "msg_type": "text",
-      "content": "...",
-      "sender": "..."
-    }
-  ]
-}
-```
+Part of the Feishu automation toolkit by UniqueClub. 🌐 https://uniqueclub.ai
