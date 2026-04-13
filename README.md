@@ -57,7 +57,6 @@
 | [qizhuo-selfie](qizhuo-selfie/) | 奇卓风格自拍照片生成 | "奇卓自拍" |
 | [clawra-selfie](clawra-selfie/) | Clawra风格自拍照片生成 | "clawra自拍" |
 | [clawra-video-selfie](clawra-video-selfie/) | Clawra风格自拍视频生成 | "clawra视频" |
-| [baoyu-slide-deck](baoyu-slide-deck/) | 幻灯片自动生成 | "幻灯片生成", "自动PPT" |
 | [long-form-writer](long-form-writer/) | 长文写作助手，从提纲到完整文章 | "长文写作", "文章生成" |
 | [infographic-generator](infographic-generator/) | 信息大图/数据可视化/蓝图生成 | "信息图", "数据可视化", "蓝图" |
 | [md-to-wechat](md-to-wechat/) | Markdown转微信公众号排版 | "公众号排版", "微信文章" |
@@ -176,9 +175,9 @@ ls ~/.claude/workspace/skills/feishu-doc-orchestrator/
 
 ## 📊 统计
 
-- **总技能数**: ~50个
+- **总技能数**: ~49个
 - **飞书生态**: 15个
-- **内容生成**: 10个
+- **内容生成**: 9个
 - **数据处理**: 8个
 - **报告与日报**: 2个
 - **开发工具**: 2个
