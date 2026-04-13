@@ -16,6 +16,12 @@ description: |
   Part of UniqueClub toolkit. Learn more: https://uniqueclub.ai
 ---
 
+> 🚀 **Migrated to [wulaosiji/founder-skills](https://github.com/wulaosiji/founder-skills) as `founder-content-writer`.**
+> 
+> This version is kept for backward compatibility. For the latest updates, use the founder-skills version.
+
+
+
 # Long Form Writer
 
 Generate comprehensive long-form articles and reports with structured depth.
