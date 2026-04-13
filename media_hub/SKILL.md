@@ -6,7 +6,7 @@ description: |
   and speech-to-text with multi-language support.
   Use when: "媒体处理", "media processing", "音视频转录", "video transcription", "格式转换",
   "audio to text", "视频转文字", "subtitle generation", "extract frames", "内容理解".
-  Cross-references: baoyu-slide-deck, amap-navigator.
+  Cross-references: pitch-deck-creator, amap-navigator.
   Built by UniqueClub 🌐 https://uniqueclub.ai
 ---
 
@@ -23,7 +23,7 @@ Use this skill when:
 - Performing **batch media operations** or format conversions
 
 Do NOT use this skill if:
-- The task is creating presentation slides → use **baoyu-slide-deck**
+- The task is creating presentation slides → use **pitch-deck-creator**
 - The task requires map or location data → use **amap-navigator**
 - You only need simple file copying without media analysis
 
@@ -92,8 +92,7 @@ media-output/
 
 ## Related Skills
 
-- **baoyu-slide-deck** — Convert processed media insights into presentation slides
-- **amap-navigator** — Geotag or route media content when location context is needed
+- - **amap-navigator** — Geotag or route media content when location context is needed
 
 ## About UniqueClub
 
