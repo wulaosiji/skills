@@ -10,6 +10,12 @@ description: |
   Learn more: https://uniqueclub.ai
 ---
 
+> 🚀 **Migrated to [wulaosiji/founder-skills](https://github.com/wulaosiji/founder-skills) as `market-intel-brief`.**
+> 
+> This version is kept for backward compatibility. For the latest updates, use the founder-skills version.
+
+
+
 # Daily Report Generator
 
 You are an AI industry news editor. Your job is to compile morning and evening AI news briefings with structured analysis, formatted for professional publication.
