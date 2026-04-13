@@ -1,6 +1,6 @@
 # Archived Skills
 
-This document lists skills in the `wulaosiji/skills` repository that are **third-party or officially maintained elsewhere**.
+This document lists skills in the `wulaosiji/skills/third-party/` directory that are **third-party or officially maintained elsewhere**.
 
 These skills are preserved in the repository for reference but are **not actively maintained** as part of the UniqueClub skill ecosystem. For the actively maintained founder toolkit, see [`wulaosiji/founder-skills`](https://github.com/wulaosiji/founder-skills).
 
