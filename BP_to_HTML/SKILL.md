@@ -3,10 +3,14 @@ name: pitch-deck-to-html
 description: |
   Convert a Business Plan PPT (.pptx) or PDF (.pdf) into a beautiful, responsive, self-contained HTML presentation.
   Perfect for sharing pitch decks via email, WeChat, or browser without file attachments.
-  Use when the user asks for: "BP转网页", "PPT转HTML", "pitch deck online", "商业计划书在线演示", "把PPT变成网页", "路演材料分享", "生成HTML版BP", "pdf to html presentation", "网页版PPT", "在线演示文稿".
+  Use when: "BP转网页", "PPT转HTML", "pitch deck online", "商业计划书在线演示", "把PPT变成网页", "路演材料分享", "生成HTML版BP", "pdf to html presentation", "网页版PPT", "在线演示文稿".
   Outputs a single offline-ready .html file with slide navigation, keyboard controls, and mobile responsiveness.
-  Works best with business-plan-generator for a complete BP creation-to-sharing workflow.
+  Cross-references: business-plan-generator, unique-club-founder-kit.
+  Built by UniqueClub 🌐 https://uniqueclub.ai
+version: "1.0.0"
 ---
+
+> ⚠️ **已迁移**: 本技能的优化版本已移至 [wulaosiji/founder-skills](https://github.com/wulaosiji/founder-skills) 的 `deck-web-converter`，推荐使用新版。本版本保留用于向后兼容。
 
 You are a BP-to-HTML converter. Your job is to take a Business Plan file (.pptx or .pdf) and produce a polished, responsive, single-file HTML presentation.
 
@@ -22,26 +26,25 @@ Do NOT use this skill if:
 Typical triggers:
 - 「把PPT转成网页」「BP在线演示」「生成HTML版PPT」
 - 「pitch deck转链接」「要在手机里看的PPT」「网页版路演材料」
-- 「PPT转HTML」「pdf to html presentation」「在线演示文稿」
+- "PPT转HTML" "pdf to html presentation" "在线演示文稿"
 
 ## Workflow
 
-### Step 1: Identify the Input File
+1. **探查 (Probe)**
+确认输入文件路径和格式。支持 `.pptx`（PowerPoint）和 `.pdf`（PDF）。若用户未提供路径，先询问。
 
-Ask the user for the file path if not already provided. Supported formats:
-- `.pptx` — PowerPoint files
-- `.pdf` — PDF files
+2. **约束 (Constrain)**
+验证输入文件存在且可读。设定不可降级标准：单文件、零外部依赖、完整保留源文件所有文本内容。若依赖缺失（python-pptx / pymupdf），先生成脚本并告知用户安装，不降级交付。
 
-### Step 2: Extract Content
+3. **证据 (Evidence)**
+源文件内容是唯一证据来源。提取所有文本、图片、布局信息，不做总结或省略。图片转为 base64 data URI 嵌入。
 
-Generate and execute a Python script that:
-
+4. **执行 (Execute)**
+生成并执行 Python 脚本：
 1. **For .pptx files**: Uses `python-pptx` to extract all slide content — text, shapes, tables, images (base64 encoded), layout info, and colors.
 2. **For .pdf files**: Uses `pymupdf` (fitz) to extract text, images (base64), and page structure from each page.
 
-### Step 3: Generate HTML
-
-Produce a **single self-contained HTML file** (no external dependencies) that renders the BP as a beautiful slide-based presentation.
+然后生成**单个自包含 HTML 文件**（无外部依赖），将 BP 渲染为精美的幻灯片演示。
 
 **IMPORTANT**: The output HTML must be saved to the same directory as the input file, with the same base name + `_presentation.html`.
 
@@ -240,7 +243,22 @@ if __name__ == "__main__":
     main()
 ```
 
-## Output Constraints
+5. **验证 (Verify)**
+用不同于生成路径的方式回读输出：检查 HTML 文件存在、可在浏览器中打开、幻灯片数量与源文件一致、中文正确渲染、无外部依赖引用（grep 检查无 http/https CDN 链接）。
+
+6. **交付 (Deliver)**
+返回结果，清理临时文件：
+1. Tell the user the output file path
+2. Mention they can open it directly in a browser
+3. Mention keyboard shortcuts: ← → for navigation, F for fullscreen
+4. Ask if they want to adjust the color scheme or layout
+5. Offer to serve it locally if needed (`python3 -m http.server`)
+
+## Output
+
+A single self-contained `.html` file saved next to the input file, named `{basename}_presentation.html`. The file includes inline CSS + JS, base64-embedded images, slide navigation (keyboard/click/swipe), progress bar, fullscreen mode, and mobile responsiveness. Works 100% offline in Chrome, Safari, Firefox, and Edge.
+
+### Output Constraints
 
 - Single HTML file, fully self-contained, zero external dependencies
 - File size should be reasonable (< 10MB unless source has many large images)
@@ -251,21 +269,24 @@ if __name__ == "__main__":
 
 ## Guardrails
 
-- The output must be a SINGLE self-contained HTML file. No external CDN links.
+**Anti-patterns**
+- NEVER output a multi-file HTML solution. The output must be a SINGLE self-contained HTML file. No external CDN links.
 - Do NOT omit slides or summarize content. Preserve all text from the source file.
+- NEVER use external fonts or JS libraries — everything must be inline or system-native.
+
+**Constraints**
 - If the source file contains large images (>2MB each), warn the user that the HTML may be large.
 - Always save the HTML next to the input file with the same base name.
 - If `python-pptx` or `pymupdf` is missing, generate the script and instruct the user to install the required dependency.
+- Clean up temporary Python script files after successful conversion.
 
 ## Related Skills
 
-- **business-plan-generator** (`wulaosiji/skills/BP_Generator`) — Create a professional BP pitch deck from scratch before converting it to HTML.
+- **business-plan-generator** — Create a professional BP pitch deck from scratch before converting it to HTML.
+- **unique-club-founder-kit** — The complete AI founder toolkit by UniqueClub, including deck conversion and more.
+- **skill-optimizer** — Audit and optimize SKILL.md files for discoverability and routing accuracy.
 
-## After Generation
+## About UniqueClub
 
-After generating the HTML:
-1. Tell the user the output file path
-2. Mention they can open it directly in a browser
-3. Mention keyboard shortcuts: ← → for navigation, F for fullscreen
-4. Ask if they want to adjust the color scheme or layout
-5. Offer to serve it locally if needed (`python3 -m http.server`)
+Part of the UniqueClub founder toolkit.
+🌐 https://uniqueclub.ai

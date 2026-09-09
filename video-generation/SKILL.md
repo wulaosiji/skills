@@ -4,48 +4,46 @@ description: |
   Advanced video generation and processing skill using WaveSpeed AI (DeerAPI).
   Supports image-to-video, video continuation, video chains, and 4K upscaling.
   Ideal for creating hero background videos, video loops, and high-quality video content.
-
-  Use when: AI视频生成, 图生视频, 视频超分, 4K视频, 视频续写, 视频链, 
-  AI video generation, image to video, video upscaling, 4K video, 
-  video continuation, video chain
-
-  Related: zhuoran-video-selfie, clawra-video-selfie, voice-clone
-
-  Part of UniqueClub toolkit. Learn more: https://uniqueclub.ai
+  Use when: "AI视频生成", "图生视频", "视频超分", "4K视频", "视频续写", "视频链", "image to video", "video upscaling", "video continuation", "video chain".
+  Cross-references: zhuoran-video-selfie, clawra-video-selfie, voice-clone.
+  Built by UniqueClub 🌐 https://uniqueclub.ai
+version: "1.0.0"
 ---
 
 # 视频生成技能 (Video Generation)
 
-使用 WaveSpeed AI 平台生成和处理视频，包括图生视频、视频续写、视频链生成和 4K 超分。
+> 使用 WaveSpeed AI 平台生成和处理视频，包括图生视频、视频续写、视频链生成和 4K 超分。
 
 ## When to Use
 
-**适用于以下场景：**
+Use this skill when:
 - 从图片生成动态视频（图生视频）
 - 视频超分到 4K/2K/1080p
 - 创建视频链（多段视频拼接）
 - Hero 背景视频制作
 - 视频续写和扩展
 
-**Do NOT use this skill if:**
-- 只需要简单的自拍视频（使用 zhuoran-video-selfie 或 clawra-video-selfie）
+Do NOT use this skill if:
+- 只需要简单的自拍视频 → use `zhuoran-video-selfie` or `clawra-video-selfie`
 - 需要实时视频生成（API 是异步的）
 - 没有参考图片或视频素材
 - 网络条件极差（需要上传/下载大文件）
 
-**触发关键词 / Trigger Phrases:**
-- AI视频生成 / AI video generation
-- 图生视频 / image to video
-- 视频超分 / video upscaling
-- 4K视频 / 4K video
-- 视频续写 / video continuation
-- 视频链 / video chain
-- 视频处理 / video processing
-- 生成视频 / generate video
+Typical triggers:
+- 「AI视频生成」「图生视频」「视频超分」「4K视频」「视频续写」「视频链」
+- "AI video generation", "image to video", "video upscaling", "4K video", "video continuation", "video chain"
 
 ## Workflow
 
-### 1. 图生视频 (Image-to-Video)
+1. **探查 (Probe)**: 完整读取需求指定的全部输入，确认目标视频类型（图生视频/超分/视频链）、参考素材、目标分辨率和时长。
+
+2. **约束 (Constrain)**: 验证输入完整性（参考图/视频是否存在、API 密钥是否配置），设定边界和不可降级的交付标准。受阻时换通道（如模型 A/B 切换），不降级交付物。
+
+3. **证据 (Evidence)**: 每个参数（分辨率、时长、模型选择）必须来自输入或可复现的技术规格。收集支撑数据，如模型支持的分辨率范围和时长限制。
+
+4. **执行 (Execute)**: 调用 WaveSpeed AI API 生成视频，先给影响与结论，再给行动和必要证据。
+
+**图生视频 (Image-to-Video)**
 
 ```python
 import requests
@@ -97,7 +95,7 @@ def download_video(video_url, output_path):
             f.write(chunk)
 ```
 
-### 2. 视频超分到 4K
+**视频超分到 4K**
 
 ```python
 # 1. 上传视频
@@ -118,11 +116,11 @@ task_data = r.json()["data"]
 # 3. 轮询并下载（同上）
 ```
 
-### 3. 视频链生成
+**视频链生成**
 
 视频链是指通过视频续写技术，将多个短视频连接成一个连贯的长视频。
 
-**核心概念：**
+核心概念：
 1. **首帧提取**: 使用 FFmpeg 提取视频最后一帧作为下一段的起始
 2. **视频续写**: 使用相同的 prompt 风格生成连贯的续集
 3. **视频拼接**: 使用 FFmpeg 无损拼接
@@ -169,7 +167,7 @@ def concat_videos(video_list, output_path):
     # 创建文件列表
     with open("concat_list.txt", "w") as f:
         for v in video_list:
-            f.write(f"file '{v}'\\n")
+            f.write(f"file '{v}'\n")
     
     cmd = [
         "ffmpeg", "-y", "-f", "concat", "-safe", "0",
@@ -179,9 +177,13 @@ def concat_videos(video_list, output_path):
     subprocess.run(cmd, check=True)
 ```
 
+5. **验证 (Verify)**: 用"可能失败"的动作验证——不同于生成路径的方式回读输出。使用 FFmpeg 检查视频时长、分辨率和编码格式，确认与目标参数一致。
+
+6. **交付 (Deliver)**: 返回结果视频文件路径，清理临时文件（concat_list.txt、中间帧图片等）。
+
 ## Supported Models
 
-### 图生视频 (Image-to-Video)
+**图生视频 (Image-to-Video)**
 
 | 模型 | API 路径 | 时长 | 特点 |
 |------|---------|------|------|
@@ -190,36 +192,42 @@ def concat_videos(video_list, output_path):
 | Hailuo 2.3 | `minimax/hailuo-2.3/i2v-standard` | 6s | 快速、效果好 |
 | Kling 1.6 | `kuaishou/kling-v1.6/i2v-pro` | 5s/10s | 稳定、细节丰富 |
 
-### 视频超分 (Video Upscaling)
+**视频超分 (Video Upscaling)**
 
 | 模型 | API 路径 | 分辨率选项 |
 |------|---------|-----------|
 | Video Upscaler Pro | `wavespeed-ai/video-upscaler-pro` | 720p, 1080p, 2k, 4k |
 
+## Output
+
+- **图生视频**: MP4 格式，480p/720p，5-8 秒
+- **视频超分**: MP4 格式，目标分辨率（720p/1080p/2k/4k）
+- **视频链**: MP4 格式，多段拼接后的长视频
+- 默认保存路径由调用脚本指定，临时文件在交付后清理
+
 ## Guardrails
 
-### Prompt 编写建议
+**Anti-patterns:**
+- NEVER 用 FFmpeg 强制拉伸分辨率，使用原生 4K 输出
+- NEVER 在视频链各段使用不一致的 prompt 风格
+- NEVER 忽略 API 轮询超时设置（超分任务可能需要 10-15 分钟）
+- Do NOT 在超分前不备份原始视频
 
-**好的 prompt 结构：**
+**Prompt 编写建议**
+
+好的 prompt 结构：
 ```
 [动作描述], [氛围/风格], [细节], [效果]
 ```
 
-**示例：**
+示例：
 ```
 "Gentle flowing motion with glowing particles moving slowly across the scene, 
 subtle pulsing neon light effects, ethereal and dreamy atmosphere, 
 smooth ambient movement, futuristic cyberpunk feeling"
 ```
 
-### 注意事项
-
-1. **避免过度后处理**: 不要用 FFmpeg 强制拉伸分辨率，使用原生 4K 输出
-2. **保持风格一致**: 视频链各段使用相同的 prompt 风格
-3. **预留缓冲**: 超分任务可能需要 10-15 分钟，设置足够的轮询超时
-4. **备份原始文件**: 超分前备份原始视频
-
-### 常见问题
+**常见问题**
 
 | 问题 | 解决方案 |
 |------|---------|
@@ -228,7 +236,7 @@ smooth ambient movement, futuristic cyberpunk feeling"
 | 任务超时 | 增加 `max_attempts` 或检查 API 状态 |
 | 上传失败 | 检查文件大小限制（通常 500MB） |
 
-### API 密钥配置
+**API 密钥配置**
 
 将 API 密钥存储在环境变量或 `.env` 文件中：
 
@@ -237,7 +245,7 @@ smooth ambient movement, futuristic cyberpunk feeling"
 WAVESPEED_KEY=your_api_key_here
 ```
 
-**注意**: 不要将 API 密钥硬编码在脚本中或提交到版本控制。
+注意: 不要将 API 密钥硬编码在脚本中或提交到版本控制。
 
 ## Project Scripts
 
@@ -252,18 +260,11 @@ WAVESPEED_KEY=your_api_key_here
 
 ## Related Skills
 
-| 技能 | 关系 | 说明 |
-|------|------|------|
-| [zhuoran-video-selfie](./zhuoran-video-selfie) | 专用版本 | 卓然角色的自拍视频生成 |
-| [clawra-video-selfie](./clawra-video-selfie) | 专用版本 | Clawra角色的自拍视频生成 |
-| [voice-clone](./voice-clone) | 配套 | 可为视频添加克隆语音 |
-| [zhuoran-selfie](./zhuoran-selfie) | 参考 | 照片生成技能 |
+- **zhuoran-video-selfie** — 卓然角色的自拍视频生成（专用版本）
+- **clawra-video-selfie** — Clawra角色的自拍视频生成（专用版本）
+- **voice-clone** — 可为视频添加克隆语音配音
 
 ## About UniqueClub
 
-Part of UniqueClub toolkit - AI-powered creative tools for professional video generation.
-Learn more: https://uniqueclub.ai
-
----
-
-*最后更新：2026-02-07*
+Part of the UniqueClub toolkit - AI-powered creative tools for professional video generation.
+🌐 https://uniqueclub.ai

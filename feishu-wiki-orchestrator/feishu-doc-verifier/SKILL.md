@@ -1,66 +1,93 @@
 ---
 name: feishu-doc-verifier
-description: 文档验证子技能 - 使用 Playwright 验证飞书文档是否创建成功。
+description: |
+  知识库文档验证子技能 / Feishu wiki document verifier sub-skill. 使用 Playwright 验证飞书知识库文档是否创建成功并可正常访问，截图留证。
+  Use when: "验证知识库文档", "verify wiki document", "知识库可访问性检查", "wiki accessibility check", "Playwright验证知识库", "playwright wiki verification", "知识库文档截图", "wiki document screenshot".
+  内部组件，由 feishu-wiki-orchestrator 编排调用，使用不同于生成路径的方式回读验证。Cross-references: feishu-wiki-orchestrator, feishu-doc, feishu-logger.
+  Built by UniqueClub 🌐 https://uniqueclub.ai
+version: "1.0.0"
 ---
 
-# 文档验证子技能
+# Feishu Wiki Document Verifier (Sub-skill)
 
-## 职责
-使用 Playwright 访问飞书文档，验证文档是否创建成功并可正常访问。
+> 使用 Playwright 访问飞书知识库文档，验证文档是否创建成功并可正常访问，截图留证。内部组件。
 
-## 输入
-- `doc_info.json` - 由 feishu-doc-creator-v2 生成
+## When to Use
 
-## 输出
-- `output/verify_result.json` - 验证结果
+Use this skill when:
+- 需要验证新创建的知识库文档是否可正常访问时
+- 需要通过浏览器截图确认知识库文档内容时
+- 需要在知识库文档创建流程末尾做最终验证时
 
-## 工作流程
+Do NOT use this skill if:
+- 需要读取文档内容（API 方式）→ use `feishu-doc` instead
+- 需要创建知识库文档 → use `feishu-wiki-orchestrator` (parent) instead
+- 需要验证云盘文档 → use `feishu-doc-orchestrator/feishu-doc-verifier` instead
 
-### 第一步：加载文档信息
-从 `doc_info.json` 加载文档 ID 和 URL。
+Typical triggers:
+- 「验证知识库文档是否创建成功」「检查知识库文档可访问性」
+- "verify wiki doc", "check wiki document accessibility"
 
-### 第二步：启动 Playwright
-使用持久化上下文启动浏览器。
+## Workflow
 
-### 第三步：访问文档
-导航到文档 URL，等待页面加载。
+1. **探查 (Probe)**
+从 `doc_info.json` 加载知识库文档 ID 和 URL。
 
-### 第四步：验证结果
-检查页面标题和内容，确认文档可访问。
+2. **约束 (Constrain)**
+使用 Playwright 持久化上下文启动浏览器，确保登录态有效。验证方式必须不同于生成路径（API 创建 → 浏览器验证）。知识库 URL 格式为 `https://xxx.feishu.cn/wiki/xxx`。
 
-### 第五步：保存结果
+3. **执行 (Execute)**
+1. 启动 Playwright 浏览器
+2. 导航到知识库文档 URL，等待页面加载
+3. 检查页面标题和内容
+4. 确认文档在知识库节点树中的位置
+5. 截图保存
+
+```bash
+python scripts/doc_verifier.py workflow/step2_create/doc_info.json output
+```
+
+4. **验证 (Verify)**
+确认 `page_loaded` 为 true，`page_title` 与预期标题匹配，截图文件已生成，知识库面包屑导航显示正确位置。
+
+5. **交付 (Deliver)**
 保存验证结果到 `output/verify_result.json`。
 
-## 数据格式
+## Output
 
-### verify_result.json 格式
 ```json
 {
   "success": true,
   "document_id": "U2wNd2rMkot6fzxr67ScN7hJn7c",
-  "document_url": "https://feishu.cn/docx/U2wNd2rMkot6fzxr67ScN7hJn7c",
+  "document_url": "https://feishu.cn/wiki/U2wNd2rMkot6fzxr67ScN7hJn7c",
   "page_loaded": true,
   "page_title": "文档标题",
+  "wiki_location_correct": true,
   "screenshot": "output/screenshot.png",
   "verified_at": "2026-01-22T10:40:00"
 }
 ```
 
-## 使用方式
+## Guardrails
 
-### 命令行
-```bash
-python scripts/doc_verifier.py workflow/step2_create/doc_info.json output
-```
+**Anti-patterns**
+- NEVER 使用 API 方式验证（与生成路径相同，无法发现浏览器端问题）
+- Do NOT 跳过截图步骤（截图是验证的重要证据）
+- Do NOT 独立使用本子技能——应由父技能编排
 
-### 作为子技能被调用
-```python
-result = call_skill("feishu-doc-verifier", {
-    "doc_info_file": "workflow/step2_create/doc_info.json",
-    "output_dir": "workflow/step5_verify"
-})
-```
+**Constraints**
+- 需要 Playwright 和浏览器驱动已安装
+- 使用持久化上下文以保持飞书登录态
+- 知识库文档可能需要额外的权限检查
+- 输出给 `feishu-logger` 汇总记录
 
-## 与其他技能的协作
-- 接收来自 `feishu-permission-manager-v2` 的文档信息
-- 输出给 `feishu-logger`
+## Related Skills
+
+- **feishu-wiki-orchestrator** (parent) — 主编排技能，调用本子技能
+- **feishu-doc** — API 方式读取文档内容
+- **feishu-logger** — 下游：汇总验证结果到日志
+
+## About UniqueClub
+
+Part of the UniqueClub toolkit.
+🌐 https://uniqueclub.ai

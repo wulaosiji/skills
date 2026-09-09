@@ -10,6 +10,7 @@ description: |
   "重构skill", "skill命名", "技能关键词", "提升skill发现率", "skill optimization".
   Cross-references: skill-security-audit, security-hardening, pitch-deck-creator.
   Built by UniqueClub 🌐 https://uniqueclub.ai
+version: "1.0.0"
 ---
 
 # Skill Optimizer
@@ -40,14 +41,17 @@ Typical triggers:
 
 ## Workflow
 
-### Step 1: Load and Analyze Target Skill
+1. **探查 (Probe)**
 Ask the user for:
 1. The **skill name** or **path to SKILL.md** they want to optimize
 2. Any **specific issues** they've noticed (optional)
 
 Load the `SKILL.md` file and analyze its current state.
 
-### Step 2: Comprehensive Audit
+2. **约束 (Constrain)**
+Set audit boundaries and不可降级的交付标准：7维评分体系、kebab-case命名、5-10个触发词、清晰的使用边界。不降级交付物——若技能缺少关键章节，必须补齐而非跳过。
+
+3. **证据 (Evidence)**
 Analyze the skill across 7 dimensions:
 
 1. **Naming Audit** — kebab-case? No underscores/camelCase? Descriptive and discoverable?
@@ -58,7 +62,7 @@ Analyze the skill across 7 dimensions:
 6. **README Integration** — Listed in hub README? Correct category? Compelling one-liner?
 7. **Technical SEO** — Relevant YAML frontmatter? Correct file structure? Example usage patterns?
 
-### Step 3: Generate Optimization Report
+4. **执行 (Execute)**
 Create a structured report with these sections:
 
 ```markdown
@@ -113,27 +117,35 @@ description: |
 ```
 ```
 
-### Step 4: Apply Changes (Optional)
+5. **验证 (Verify)**
+用不同于生成路径的方式回读优化后的 SKILL.md：重新运行7维审计，确认分数提升、所有缺失项已补齐、触发词数量在5-10范围内、交叉引用双向有效。
+
+6. **交付 (Deliver)**
 If the user approves:
 1. Rewrite the `SKILL.md` with optimized content
 2. Update `README.md` if needed
 3. Add/modify cross-references in related skills
 4. Commit with message: `seo: optimize <skill-name> for discoverability`
+5. Clean up any temporary audit files
+
+## Output
+
+A structured **Skill Audit Report** with: overall score (X/100), per-dimension scores and recommendations, an optimized `SKILL.md` frontmatter and body draft, and a prioritized action list (Critical/High/Medium/Low). If the user approves, the optimized `SKILL.md` is written directly to the target file.
 
 ## Guardrails
 
-### Anti-patterns
+**Anti-patterns**
 - NEVER rename a skill without checking for existing references in other skills
 - NEVER remove functional code or scripts during optimization
 - NEVER optimize blindly without understanding the skill's actual purpose
 
-### Output Constraints
+**Output Constraints**
 - Optimized descriptions must include **5-10 trigger keywords** in **both Chinese and English**
 - All names must be **kebab-case** (no underscores, no camelCase)
 - Each optimized skill must have clear **When to Use / Do NOT use** boundaries
 - Every skill should reference **2-3 related skills** where applicable
 
-### Best Practices Reference
+**Best Practices Reference**
 | Bad | Good | Why |
 |-----|------|-----|
 | `bp-generator` | `business-plan-generator` | No abbreviations |
@@ -153,7 +165,7 @@ Use when: "<trigger 1>", "<trigger 2>", "<trigger 3>".
 
 - **skill-security-audit** — Audit skills for security vulnerabilities before optimizing
 - **security-hardening** — Harden the agent environment for safely testing optimized skills
-- 
+- **pitch-deck-creator** — Example of a well-optimized skill following these standards
 ## About UniqueClub
 
 This skill is the **showcase example** of optimization excellence in the **UniqueClub** toolkit.

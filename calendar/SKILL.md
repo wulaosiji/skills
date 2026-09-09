@@ -1,19 +1,20 @@
 ---
 name: calendar
 description: |
-  Google Calendar integration via Google Apps Script Web API.
-  Use when checking schedule, viewing today's events, weekly calendar, upcoming meetings, or adding new calendar events.
-  Use when: "check my calendar", "what's on my schedule today", "do I have meetings this week", "add event to calendar", "我的日历", "今天有什么安排", "查看日程".
-  Supports querying events (today, week, upcoming, date range) and creating new events with guest invites.
+  Google Calendar集成工具，通过Google Apps Script Web API查询日程、查看今日/本周会议、查询即将到来的事件、创建新日历事件并添加参会人邀请。
+  Use when: "查看日历", "今天有什么安排", "我的日程", "check my calendar", "what's on my schedule", "添加日程", "create event", "本周会议".
+  支持今日、本周、未来N小时、自定义日期范围查询和事件创建，需一次性配置Apps Script Web App。Cross-references: email-sender, document-hub, daily-report.
+  Built by UniqueClub 🌐 https://uniqueclub.ai
+version: "1.0.0"
 ---
 
 # Google Calendar Integration
 
-Integration with Google Calendar via Apps Script Web API for checking schedules and managing events.
+> Integration with Google Calendar via Apps Script Web API for checking schedules and managing events.
 
 ## When to Use
 
-Use this skill when the user wants to:
+Use this skill when:
 - Check their schedule or calendar
 - View today's events and meetings
 - See weekly calendar overview
@@ -28,33 +29,24 @@ Do NOT use this skill if:
 
 Typical triggers:
 - 「查看日历」「今天有什么安排」「我的日程」
-- 「check my calendar」「what's on my schedule"
-- 「add meeting」「create event」「schedule a call"
-- 「这周有什么会议」「upcoming events"
+- "check my calendar", "what's on my schedule", "upcoming events"
+- 「这周有什么会议」「添加会议」「创建日程」
+- "add meeting", "create event", "schedule a call"
 
 ## Workflow
 
-### Step 1: Verify Setup
+遵循六步推进法（探查→约束→证据→执行→验证→交付）完成操作。
 
-Ensure the user has completed the setup:
+1. **探查 (Probe)**
+完整读取用户需求，确认日历操作类型和时间范围。验证用户已完成配置：
 - Google Apps Script deployed as web app
 - API URL and token configured
 - Calendar access permissions granted
 
 If not set up, guide them through `./SETUP.md` first.
 
-### Step 2: Gather Query Requirements
-
-Determine what the user needs:
-- **Today's events**: Quick daily overview
-- **This week**: Weekly calendar view
-- **Upcoming**: Next N hours (default: 4 hours)
-- **Date range**: Specific start/end dates
-- **Create event**: New meeting with title, time, guests
-
-### Step 3: Execute Calendar Action
-
-Use the appropriate API endpoint:
+2. **约束 (Constrain)**
+确定用户需要的查询类型和参数，设定不可降级的标准——创建事件前必须确认详情。受阻时换通道，不降级交付物。
 
 | Action | Description | Parameters |
 |--------|-------------|------------|
@@ -64,23 +56,21 @@ Use the appropriate API endpoint:
 | `range` | Custom date range | `start`, `end` (ISO dates) |
 | `create` | Create new event | `title`, `start`, `end`, `guests`, `description`, `location` |
 
-### Step 4: Present Results
+3. **证据 (Evidence)**
+每个日程数据必须来自Google Calendar API实际响应，不编造事件。记录查询时间和API响应状态作为可追溯证据。
 
-Return events in a clear, readable format:
-- Event title and time
-- Location (if any)
-- All-day event indicator
+4. **执行 (Execute)**
+调用对应API端点，先给影响与结论，再给行动和必要证据。创建事件时先与用户确认详情再执行。
 
-## Guardrails
+5. **验证 (Verify)**
+用不同于生成路径的方式回读——检查返回的事件列表非空（或明确说明无事件），每个事件有title和start/end字段，创建事件后确认返回成功状态。
 
-- Always verify API token is configured before making requests
-- Handle expired/invalid tokens gracefully
-- Respect user privacy - don't share calendar data with unauthorized parties
-- When creating events, confirm details with user before execution
-- Guest emails must be valid - invalid emails will fail silently
+6. **交付 (Deliver)**
+以清晰可读的格式返回事件列表（标题、时间、地点、全天标识），创建事件返回事件详情。不存储用户日历数据。
 
-## API Response Format
+## Output
 
+返回JSON格式：
 ```json
 {
   "count": 1,
@@ -96,10 +86,29 @@ Return events in a clear, readable format:
 }
 ```
 
-## Related Skills
+创建事件返回创建的事件详情。
 
-- **meeting-scheduler** — For complex scheduling with multiple participants
-- **zoom-meeting** — For generating meeting links to include in calendar events
+## Guardrails
+
+以下约束确保安全、可靠地使用本技能。
+
+**Anti-patterns**
+- NEVER 在未确认详情的情况下创建日历事件
+- NEVER 与未授权方共享用户日历数据
+- Do NOT 忽略过期/无效token的情况，需优雅处理并引导重新配置
+- Do NOT 使用无效的参会人邮箱（会静默失败）
+
+**Constraints**
+- 必须先配置Google Apps Script Web App才能使用
+- 仅支持Google Calendar，不支持Outlook等其他提供商
+- 不支持修改现有事件（需直接使用Google Calendar）
+- 参会人邮箱必须有效，否则会静默失败
+
+**Privacy Rules**
+- Always verify API token is configured before making requests
+- Handle expired/invalid tokens gracefully
+- Respect user privacy - don't share calendar data with unauthorized parties
+- When creating events, confirm details with user before execution
 
 ## References
 
@@ -107,8 +116,13 @@ Return events in a clear, readable format:
 - `references/calendar-api.gs` — The Apps Script implementation
 - `references/clasp-setup.md` — Detailed clasp CLI guide
 
+## Related Skills
+
+- **email-sender** — 发送会议邀请邮件和日程提醒
+- **daily-report** — 将日程整合到每日简报中
+- **document-hub** — 导出日程为文档格式
+
 ## About UniqueClub
 
-Part of the UniqueClub toolkit.
+Part of the UniqueClub toolkit — a collection of skills for AI-powered content creation and automation.
 🌐 https://uniqueclub.ai
-📂 https://github.com/wulaosiji/skills

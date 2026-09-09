@@ -1,28 +1,20 @@
 ---
 name: email-sender
 description: |
-  邮件发送统一封装工具，支持HTML模板邮件、纯文本邮件、附件发送。内置科技感邮件模板，支持浅色/深色主题自动切换。
-  
-  Use when:
-  - 发送格式化邮件通知 send formatted email notifications
-  - 发送日报/周报等报告 send daily/weekly reports
-  - 带附件的邮件发送 send emails with attachments
-  - 营销邮件批量发送 batch marketing emails
-  - 会议邀请邮件 meeting invitations
-  - 系统通知邮件 system notifications
-  
-  Cross-references: document-hub, pdf, long-form-writer, rss-feed
-  
-  Part of UniqueClub toolkit. Learn more: https://uniqueclub.ai
+  邮件发送统一封装工具，支持HTML模板邮件（科技感深色/浅色主题自动切换）、纯文本邮件、附件发送、营销邮件和系统通知，内置飞书SMTP配置。
+  Use when: "发送邮件", "发封报告邮件", "HTML邮件", "send email", "email report", "带附件的邮件", "HTML email template", "日报邮件".
+  强制使用模板（白天浅色/晚上深色），默认包含广告，支持高亮数据卡片和自定义页脚。Cross-references: document-hub, pdf, rss-feed, daily-report.
+  Built by UniqueClub 🌐 https://uniqueclub.ai
+version: "1.0.0"
 ---
 
 # Email Sender Skill
 
-邮件发送统一封装，支持HTML模板和纯文本。
+> 邮件发送统一封装，支持HTML模板和纯文本，内置科技感深色/浅色主题。
 
 ## When to Use
 
-### Use This Skill When
+Use this skill when:
 - 需要发送格式化的HTML邮件
 - 发送带有品牌样式的营销邮件
 - 附件发送（报告、数据文件等）
@@ -30,41 +22,37 @@ description: |
 - 发送系统通知或日报/周报
 - 需要科技感设计风格的邮件
 
-### Do NOT Use This Skill If
-- 需要发送大量邮件（可能触发SMTP限制）
-- 收件人邮箱服务器有严格过滤
-- 网络环境使用VPN/代理（会导致SSL错误）
+Do NOT use this skill if:
+- 需要发送大量邮件（可能触发SMTP限制）→ 分批发送或使用专业邮件服务
+- 收件人邮箱服务器有严格过滤 → 确认收件地址有效性
+- 网络环境使用VPN/代理（会导致SSL错误）→ 切换国内网络
 - 需要复杂的邮件模板定制（超出内置模板）
 
-### Typical Trigger Phrases
-**Chinese:**
-- "发送邮件"
-- "发封报告邮件"
-- "HTML邮件"
-- "科技感邮件模板"
-- "带附件的邮件"
-- "日报邮件"
-
-**English:**
-- "Send email"
-- "Email report"
-- "HTML email template"
-- "Send with attachment"
-- "Daily report email"
-- "Tech-style email"
+Typical triggers:
+- 「发送邮件」「发封报告邮件」「HTML邮件」
+- "Send email", "Email report", "HTML email template"
+- 「科技感邮件模板」「带附件的邮件」「日报邮件」
+- "Send with attachment", "Daily report email", "Tech-style email"
 
 ## Workflow
 
-### Step 1: 选择邮件类型
+遵循六步推进法（探查→约束→证据→执行→验证→交付）完成操作。
+
+1. **探查 (Probe)**
+完整读取用户需求，确认邮件类型、收件人、主题和内容。检查网络环境（必须国内直连，VPN会导致SSL错误）。
+
+2. **约束 (Constrain)**
+根据当前时间选择邮件主题，设定不可降级的标准——必须使用模板（不允许纯文本邮件）。受阻时换通道，不降级交付物。
+
 | 函数 | 场景 | 特点 |
 |------|------|------|
 | `send_smart_email()` | 通用 | 自动根据时间选主题 |
 | `send_tech_email()` | 晚上/深色 | 科技感深色主题 |
 | `send_light_email()` | 白天/浅色 | 清爽浅色主题 |
-| `send_email()` | 简单 | 纯文本 |
+| `send_email()` | 简单 | 纯文本（不推荐） |
 | `send_email_with_attachments()` | 附件 | 带文件 |
 
-### Step 2: 配置邮件参数
+配置邮件参数：
 ```python
 required_params = {
     "to_email": "recipient@example.com",
@@ -74,7 +62,11 @@ required_params = {
 }
 ```
 
-### Step 3: 发送邮件
+3. **证据 (Evidence)**
+邮件内容必须来自用户输入或可追溯数据源，不编造报告内容。每个数据点必须有明确来源。
+
+4. **执行 (Execute)**
+调用邮件发送函数，先给影响与结论，再给行动和必要证据。
 ```python
 from skills.email_sender.email_sender import send_smart_email
 
@@ -86,14 +78,34 @@ send_smart_email(
 )
 ```
 
-### Step 4: 处理异常
+处理异常：
 - 捕获网络错误
 - 处理SMTP认证失败
 - 记录发送日志
 
+5. **验证 (Verify)**
+用不同于生成路径的方式回读——检查发送返回状态为成功，确认收件人地址格式正确，验证附件文件存在且可读。如遇SSL错误，确认已关闭VPN。
+
+6. **交付 (Deliver)**
+返回邮件发送成功/失败状态，清理临时附件文件（如需要）。记录发送日志。
+
+## Output
+
+返回邮件发送结果：
+- 成功：返回收件人、主题和发送时间
+- 失败：返回错误类型和建议解决方案（如SSL错误→关闭VPN，认证失败→检查SMTP密码）
+
 ## Guardrails
 
-### Email Sending Rules (Updated 2026-03-04)
+以下约束确保安全、可靠地使用本技能。
+
+**Anti-patterns**
+- NEVER 使用纯文本邮件——必须使用HTML模板
+- NEVER 在VPN/代理环境下发送（会导致SSL握手被飞书服务器拒绝）
+- Do NOT 发送大量邮件（可能触发SMTP频率限制）
+- Do NOT 不处理发送失败的情况
+
+**Email Sending Rules (Updated 2026-03-04)**
 
 **强制规范:**
 
@@ -105,7 +117,7 @@ send_smart_email(
    - 除非明确指定 `include_ad=False`
    - 广告位置：邮件内容底部
 
-### Network Environment
+**Network Environment**
 ⚠️ **重要**: 使用邮件功能时请保持**国内网络环境**
 
 - ✅ 国内直连: SMTP连接正常
@@ -119,15 +131,15 @@ EOF occurred in violation of protocol
 
 **解决方案**: 关闭VPN，切换国内网络后重试。
 
-### Limitations
-- 依赖飞书SMTP服务器
+**Constraints**
+- 依赖飞书SMTP服务器（smtp.feishu.cn:465）
 - 单账户有发送频率限制
 - 附件大小限制（通常25MB）
 - 不支持邮件追踪功能
 
 ## Core Features
 
-### 1. 智能主题选择
+**1. 智能主题选择**
 ```python
 from skills.email_sender.email_sender import send_smart_email
 
@@ -140,7 +152,7 @@ send_smart_email(
 )
 ```
 
-### 2. 深色科技感模板
+**2. 深色科技感模板**
 ```python
 from skills.email_sender.email_sender import send_tech_email
 
@@ -166,7 +178,7 @@ send_tech_email(
 )
 ```
 
-### 3. 浅色主题模板
+**3. 浅色主题模板**
 ```python
 from skills.email_sender.email_sender import send_light_email
 
@@ -179,7 +191,7 @@ send_light_email(
 )
 ```
 
-### 4. 带附件邮件
+**4. 带附件邮件**
 ```python
 from skills.email_sender.email_sender import send_email_with_attachments
 
@@ -194,7 +206,7 @@ send_email_with_attachments(
 )
 ```
 
-### 5. 纯文本邮件（不推荐）
+**5. 纯文本邮件（不推荐）**
 ```python
 from skills.email_sender.email_sender import send_email
 
@@ -223,18 +235,9 @@ send_email(
 - 用户名: `zhuoran@100aiapps.cn`
 - 密码: `FEISHU_SMTP_PASSWORD`
 
-## Related Skills
-
-| Skill | Relationship | Use Case |
-|-------|--------------|----------|
-| **document-hub** | 附件来源 | 生成Word/Excel附件 |
-| **pdf** | 附件来源 | 生成PDF报告附件 |
-| **long-form-writer** | 内容生成 | 生成邮件正文内容 |
-| **rss-feed** | 数据来源 | RSS内容作为邮件素材 |
-
 ## Workflow Integration
 
-### Workflow: 生成报告 → 发送邮件
+**Workflow: 生成报告 → 发送邮件**
 ```python
 from skills.long_form_writer import generate_report
 from skills.email_sender.email_sender import send_tech_email
@@ -252,7 +255,7 @@ send_tech_email(
 )
 ```
 
-### Workflow: 生成PDF → 邮件附件
+**Workflow: 生成PDF → 邮件附件**
 ```python
 from skills.document_hub.document_hub import write
 from skills.email_sender.email_sender import send_email_with_attachments
@@ -278,6 +281,14 @@ send_email_with_attachments(
 
 - **2026-03-04**: 初始版本，封装邮件发送功能，添加科技感HTML模板
 
+## Related Skills
+
+- **document-hub** — 附件来源：生成Word/Excel附件
+- **pdf** — 附件来源：生成PDF报告附件
+- **rss-feed** — 数据来源：RSS内容作为邮件素材
+- **daily-report** — 内容生成：日报内容直接作为邮件正文
+
 ## About UniqueClub
 
-Part of the [UniqueClub](https://uniqueclub.ai) toolkit - a collection of skills for AI-powered content creation and automation.
+Part of the UniqueClub toolkit — a collection of skills for AI-powered content creation and automation.
+🌐 https://uniqueclub.ai

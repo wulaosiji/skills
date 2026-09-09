@@ -1,6 +1,12 @@
 ---
 name: gh-cli
-description: GitHub CLI (gh) comprehensive reference for repositories, issues, pull requests, Actions, projects, releases, gists, codespaces, organizations, extensions, and all GitHub operations from the command line.
+description: |
+  GitHub CLI (gh) comprehensive reference for repositories, issues, pull requests, Actions, projects, releases, gists, codespaces, organizations, extensions, and all GitHub operations from the command line.
+  Use when: "github cli", "gh命令", "创建PR", "create pull request", "合并PR", "github操作", "repo管理", "issue管理", "gh cli reference", "GitHub Actions".
+  Covers authentication, repo CRUD, issue/PR lifecycle, Actions workflows, projects, releases, gists, codespaces, search, secrets, and API requests.
+  Cross-references: find-skills, bright-data.
+  Built by UniqueClub 🌐 https://uniqueclub.ai
+version: "1.0.0"
 ---
 
 # GitHub CLI (gh)
@@ -8,6 +14,49 @@ description: GitHub CLI (gh) comprehensive reference for repositories, issues, p
 Comprehensive reference for GitHub CLI (gh) - work seamlessly with GitHub from the command line.
 
 **Version:** 2.85.0 (current as of January 2026)
+
+## When to Use
+
+Use this skill when:
+- You need to perform GitHub operations from the command line (repos, issues, PRs, Actions, releases, gists, codespaces)
+- You need a quick reference for `gh` command syntax, flags, and workflows
+- You want to automate GitHub workflows in scripts or CI/CD pipelines
+- You need to manage authentication, configuration, or extensions for the GitHub CLI
+
+Do NOT use this skill if:
+- You need to browse GitHub visually in a browser → use the browser directly
+- You need to discover/install agent skills → use `find-skills` instead
+- You need social media data scraping → use `bright-data` or `x-twitter-scraper` instead
+- The user doesn't have `gh` installed or authenticated → guide them through installation first
+
+Typical triggers:
+- 「创建PR」「合并PR」「github cli」「gh命令」
+- "create pull request" "gh repo create" "GitHub Actions"
+- 「issue管理」「repo管理」「gh cli reference」
+
+## Workflow
+
+1. **探查 (Probe)**
+确认用户需要执行的 GitHub 操作类型（repo / issue / PR / Actions / release / gist / codespace / search），确认 `gh` 已安装且已认证（`gh auth status`）。
+
+2. **约束 (Constrain)**
+验证认证状态和权限范围。设定安全边界：写操作（create/delete/merge）前确认目标和影响，不自动执行破坏性操作（delete repo、force merge）。若未认证，先引导 `gh auth login`。
+
+3. **证据 (Evidence)**
+所有命令参数来自用户输入和 `gh --help` 文档。仓库名、PR 编号、issue 编号必须由用户提供或从 `gh list` 结果中获取，不编造标识符。
+
+4. **执行 (Execute)**
+根据操作类型查阅下方对应章节的命令参考，构造并执行 `gh` 命令。对于复杂操作，使用 `--json` + `jq` 提取所需字段，使用 `--paginate` 处理大量结果。
+
+5. **验证 (Verify)**
+验证命令执行结果：检查退出状态码、确认返回的 JSON 包含预期字段、对于写操作通过 `gh view` 或 `gh list` 回读确认变更已生效。
+
+6. **交付 (Deliver)**
+返回命令执行结果和关键信息（如 PR URL、issue 编号、release 链接）。对于多步工作流，总结每步结果。不保留临时文件或敏感凭证。
+
+## Output
+
+Command-line output from `gh` commands, typically JSON (with `--json` flag) or human-readable text. For create operations, returns the URL and identifier of the created resource (PR #, issue #, repo name). For list operations, returns filtered/structured data. For API requests (`gh api`), returns raw JSON from the GitHub REST/GraphQL API.
 
 ## Prerequisites
 
@@ -2186,3 +2235,35 @@ gh help accessibility
 - GitHub Docs: https://docs.github.com/en/github-cli
 - REST API: https://docs.github.com/en/rest
 - GraphQL API: https://docs.github.com/en/graphql
+
+## Guardrails
+
+**Source & Attribution**
+- This skill is a reference for **GitHub CLI (gh)**, developed and maintained by GitHub, Inc. (https://github.com/cli/cli).
+- Official documentation: https://cli.github.com/manual/ and https://docs.github.com/en/github-cli
+- All commands interact with the GitHub API (https://api.github.com) — no data is stored locally beyond what the user explicitly saves.
+- Users must have a GitHub account and authenticate via `gh auth login`. Usage is subject to GitHub's Terms of Service and API rate limits.
+
+**Anti-patterns**
+- NEVER expose or log authentication tokens (`GH_TOKEN`, `gh auth token`) in output or scripts.
+- Do NOT execute destructive operations (`gh repo delete`, `gh pr merge --admin`, force pushes) without explicit user confirmation.
+- NEVER use `gh api` to call arbitrary endpoints without understanding the impact — prefer dedicated `gh` subcommands.
+- Do NOT hardcode repository names or identifiers — always derive them from user input or `gh list` results.
+
+**Constraints**
+- Always verify authentication status with `gh auth status` before performing write operations.
+- Respect GitHub API rate limits — use `--paginate` carefully and avoid rapid successive calls.
+- Use `--json` + `jq` for structured output; avoid parsing human-readable text in scripts.
+- For enterprise users, use `--hostname` flag to target GitHub Enterprise instances.
+- Never store tokens in plain text — use `gh auth` secure storage or environment variables.
+
+## Related Skills
+
+- **find-skills** — Discover and install additional agent skills, many of which are hosted on GitHub.
+- **bright-data** — Web data extraction via Bright Data API, complementary to GitHub data retrieval.
+- **skill-optimizer** — Audit and optimize SKILL.md files, useful for skills hosted in GitHub repositories.
+
+## About UniqueClub
+
+Part of the UniqueClub toolkit. This skill provides a reference for the third-party GitHub CLI within the UniqueClub skill ecosystem.
+🌐 https://uniqueclub.ai

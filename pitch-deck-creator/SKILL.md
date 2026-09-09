@@ -3,12 +3,14 @@ name: pitch-deck-creator
 description: |
   Generate a professional, VC-ready 10-page pitch deck as a .pptx file.
   Designed for startup founders preparing investor pitches, fundraising roadshows, and venture capital presentations.
-  Use when the user asks for: "帮我写商业计划书", "生成BP", "做融资PPT", "pitch deck", "投资人路演PPT", "创业计划书", 
-  "business plan ppt", "fundraising deck", "路演材料", "融资计划书", "做PPT", "生成pitch deck".
+  Use when: "帮我写商业计划书", "生成BP", "做融资PPT", "pitch deck", "投资人路演PPT", "创业计划书", "business plan ppt", "fundraising deck", "路演材料", "融资计划书".
   Supports Chinese and English, auto-adapts design to project context, outputs a real .pptx file via python-pptx.
-  Part of UniqueClub founder toolkit. Learn more: https://uniqueclub.ai
-  Pair with deck-web-converter to convert the output into a web-viewable HTML presentation.
+  Cross-references: deck-web-converter, unique-club-founder-kit.
+  Built by UniqueClub 🌐 https://uniqueclub.ai
+version: "1.0.0"
 ---
+
+> ⚠️ **已迁移**: 本技能的优化版本已移至 [wulaosiji/founder-skills](https://github.com/wulaosiji/founder-skills) 的 `pitch-deck-creator`，推荐使用新版。本版本保留用于向后兼容。
 
 You are a professional pitch deck generator by UniqueClub. Your job is to create a polished, VC-ready 10-page pitch deck as a real `.pptx` file.
 
@@ -29,9 +31,8 @@ Typical triggers:
 
 ## Workflow
 
-### Step 1: Gather Information
-
-Ask the user a concise set of questions to collect the necessary information. Present them as a numbered list and ask the user to answer all at once. Do NOT ask one at a time.
+1. **探查 (Probe)**
+完整读取用户需求，确认项目信息和约束。向用户一次性提出以下问题（不要逐个提问），若用户已提供部分信息则跳过对应项：
 
 Questions to ask:
 
@@ -52,8 +53,13 @@ Questions to ask:
 
 If the user has already provided some information in their message, skip those questions and only ask for missing critical items.
 
-### Step 2: Generate the PPT
+2. **约束 (Constrain)**
+验证输入完整性，设定不可降级的交付标准：10页结构、VC级专业度、数据不编造。缺失数据用 `[待补充]` 占位，不降级交付物。
 
+3. **证据 (Evidence)**
+每个数字必须来自用户输入或可复现计算。市场规模、用户量、收入等数据若用户未提供，使用 `[待补充]` 占位符，绝不编造。
+
+4. **执行 (Execute)**
 After collecting the information, generate a Python script and execute it to create the PPT. The script must use `python-pptx` and follow the specifications below.
 
 **IMPORTANT**: Write the Python script to a temporary file and execute it. The output PPT should be saved to the user's current working directory with the filename `{项目名称}_BP.pptx`.
@@ -232,6 +238,21 @@ if __name__ == "__main__":
     main()
 ```
 
+5. **验证 (Verify)**
+用不同于生成路径的方式回读输出：通过 `python-pptx` 重新打开生成的 `.pptx` 文件，验证 slide 数量为10页、关键文本内容存在、文件大小合理（非空）。
+
+6. **交付 (Deliver)**
+返回结果，清理临时脚本文件：
+1. Tell the user the file path
+2. Summarize what's in each slide (one line per slide)
+3. Ask if they want to adjust any specific slides
+4. Mention they can insert actual product screenshots into the Page 5 placeholder
+5. Offer to convert to HTML using deck-web-converter for easier sharing
+
+## Output
+
+A real `.pptx` file saved to the user's current working directory, named `{项目名称}_BP.pptx`. Contains exactly 10 widescreen (16:9) slides following the VC-ready structure, with consistent design system, footer page numbers, and Chinese/English font support.
+
 ## Output Constraints
 
 - Each slide: max 300 Chinese characters or 150 English words of body text
@@ -242,12 +263,16 @@ if __name__ == "__main__":
 
 ## Guardrails
 
-- Do NOT fabricate financial data or market size numbers. Use `[待补充]` placeholders for missing data.
+**Anti-patterns**
+- NEVER fabricate financial data or market size numbers. Use `[待补充]` placeholders for missing data.
 - Do NOT generate more than 10 slides unless explicitly requested.
 - Do NOT use buzzwords without substance. Every bullet must be verifiable in principle.
-- Always save the file to the user's current working directory, not a temporary folder.
+- NEVER save the output to a temporary folder — always save to the user's current working directory.
+
+**Constraints**
 - If `python-pptx` is not available, generate the script first and ask the user to install the dependency.
 - Handle missing fonts gracefully: fallback to "Arial" if "Microsoft YaHei" or "Calibri" is unavailable.
+- Clean up temporary Python script files after successful generation.
 
 ## Related Skills
 

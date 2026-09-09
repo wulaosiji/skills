@@ -1,30 +1,30 @@
 ---
 name: feishu-doc-creator
 description: |
-  Create and write Feishu (Lark) documents via API — supporting both Drive (cloud) docs and Wiki (knowledge base) docs.
-  Use when: "创建飞书文档", "飞书写文档", "feishu doc", "lark document",
-  "飞书知识库", "飞书云文档", "创建飞书 wiki", "feishu wiki", "飞书文档写入",
-  "lark wiki", "feishu drive", "飞书文档自动化", "飞书文档创建".
-  The unified entry point for Feishu document creation with automatic content writing
-  and permission management. Part of the Feishu automation toolkit.
+  Create and write Feishu (Lark) documents via API — supporting both Drive (cloud) docs and Wiki (knowledge base) docs. 飞书文档创建统一入口，支持自动内容写入和权限管理。
+  Use when: "创建飞书文档", "飞书写文档", "feishu doc", "lark document", "飞书知识库", "飞书云文档", "创建飞书 wiki", "feishu wiki", "飞书文档写入".
+  The unified entry point for Feishu document creation with automatic content writing and permission management. Cross-references: feishu-doc-orchestrator, feishu-doc-converter, feishu-wiki-orchestrator, feishu-pdf-downloader.
+  Built by UniqueClub 🌐 https://uniqueclub.ai
+version: "1.0.0"
 ---
 
 # Feishu Document Creator
 
-You are a Feishu automation assistant. Your job is to create Feishu (Lark) documents and populate them with content via the Feishu Open API.
+> 飞书文档创建统一入口——通过 API 创建云文档或知识库文档，并自动写入内容和管理权限。
 
 ## When to Use
 
-Use this skill when the user wants to:
-- Create a new Feishu document in Drive (云文档) or Wiki (知识库)
-- Write Markdown content into a Feishu document automatically
-- Set document permissions or add collaborators programmatically
-- Batch-create documents from templates or structured data
+Use this skill when:
+- 需要在飞书云盘（Drive）或知识库（Wiki）中创建新文档时
+- 需要将 Markdown 内容自动写入飞书文档时
+- 需要以编程方式设置文档权限或添加协作者时
+- 需要从模板或结构化数据批量创建文档时
 
 Do NOT use this skill if:
-- The user wants to read or search existing Feishu documents → use `feishu-doc-orchestrator` or `feishu-chat-extractor`
-- The user wants to convert documents between formats → use `feishu-doc-converter`
-- The user only needs to send a message in Feishu → use `feishu-chat-monitor`
+- 需要读取或搜索现有飞书文档 → use `feishu-doc` or `feishu-chat-extractor` instead
+- 需要在文档之间转换格式 → use `feishu-doc-converter` instead
+- 只需要在飞书中发送消息 → use `feishu-chat-monitor` instead
+- 需要完整的文档编排流程（含块解析、验证、日志）→ use `feishu-doc-orchestrator` instead
 
 Typical triggers:
 - 「创建飞书文档」「在飞书里写文档」「飞书 wiki 创建」
@@ -33,49 +33,17 @@ Typical triggers:
 
 ## Workflow
 
-### Step 1: Gather Requirements
+1. **探查 (Probe)**
+确认以下信息：文档类型（云文档 Drive / 知识库 Wiki）、文档标题、文档内容（直接粘贴 / Markdown 文件路径 / 按主题生成）、目标位置（云盘文件夹 token / 知识库父节点 token）、协作者（可选）。
 
-Ask the user:
+2. **约束 (Constrain)**
+验证飞书凭证环境变量 `FEISHU_APP_ID` 和 `FEISHU_APP_SECRET` 可用。可选默认配置：`FEISHU_DRIVE_FOLDER_TOKEN`、`FEISHU_PARENT_DAILY_REPORT`、`FEISHU_AUTO_COLLABORATOR_ID`。凭证缺失时提示用户配置，不降级执行。
 
-```
-请确认以下信息：
+3. **证据 (Evidence)**
+确认文档类型和目标位置后，选择对应脚本。收集所有必要参数（标题、内容路径、位置 token）。
 
-1. 文档类型：
-   - 云文档 (Drive) - 个人或团队文件夹中
-   - 知识库文档 (Wiki) - 挂载在知识库节点下
-
-2. 文档标题：
-
-3. 文档内容：
-   - 直接粘贴内容
-   - 提供 Markdown 文件路径
-   - 我来根据主题生成内容
-
-4. 目标位置（可选）：
-   - 云盘文件夹 token
-   - 知识库父节点 token
-
-5. 协作者（可选）：
-   - 需要自动添加权限的用户 open_id 列表
-```
-
-### Step 2: Validate Feishu Credentials
-
-Ensure the following environment variables are available:
-- `FEISHU_APP_ID`
-- `FEISHU_APP_SECRET`
-
-Optional defaults:
-- `FEISHU_DRIVE_FOLDER_TOKEN` — default Drive folder
-- `FEISHU_PARENT_DAILY_REPORT` — default Wiki parent node
-- `FEISHU_AUTO_COLLABORATOR_ID` — auto-added collaborator
-
-If credentials are missing, prompt the user to configure them in `~/.claude/feishu-config.env`.
-
-### Step 3: Create the Document
-
-Use the appropriate script based on document type:
-
+4. **执行 (Execute)**
+使用对应脚本创建文档：
 ```bash
 # Drive document
 python3 skills/feishu-doc-creator/scripts/create_doc.py drive "标题" input.md
@@ -83,22 +51,17 @@ python3 skills/feishu-doc-creator/scripts/create_doc.py drive "标题" input.md
 # Wiki document
 python3 skills/feishu-doc-creator/scripts/create_doc.py wiki "标题" input.md
 ```
+创建后将 Markdown 转换为飞书文档块并写入，验证插入成功。如指定协作者，调用权限 API 授予访问。
 
-### Step 4: Write Content
+5. **验证 (Verify)**
+回读创建的文档，确认标题、内容和权限均已正确设置。检查返回的 doc_token 和 URL 有效性。
 
-After creation, the document token is returned. Use `feishu-doc-orchestrator` or direct API calls to:
-1. Convert Markdown to Feishu document blocks
-2. Write blocks to the document
-3. Verify successful insertion
-
-### Step 5: Set Permissions (Optional)
-
-If collaborators are specified, call the Feishu permission API to grant access.
+6. **交付 (Deliver)**
+返回文档 URL 和创建结果 JSON，清理临时文件。
 
 ## Output
 
-The script returns a JSON result:
-
+脚本返回 JSON 结果：
 ```json
 {
   "success": true,
@@ -112,22 +75,19 @@ The script returns a JSON result:
 
 ## Guardrails
 
-- Do NOT create documents without valid Feishu credentials
-- Do NOT overwrite existing documents unless explicitly confirmed
-- If content contains images, ensure they are publicly accessible URLs (Feishu API cannot upload local images directly)
-- Maximum document size via API is limited — for very long content (>100 pages), suggest splitting into multiple docs
-- Always return the document URL to the user for easy access
+**Anti-patterns**
+- NEVER 在没有有效飞书凭证的情况下创建文档
+- Do NOT 覆盖现有文档，除非用户明确确认
+- Do NOT 尝试通过本技能读取或修改已有文档内容
 
-## Related Skills
-
-- **feishu-doc-orchestrator** — Read, search, and manage existing Feishu documents
-- **feishu-doc-converter** — Convert between Feishu doc and Markdown/PDF
-- **feishu-wiki-orchestrator** — Bulk operations on Wiki spaces and nodes
-- **feishu-pdf-downloader** — Export Feishu documents to PDF
+**Constraints**
+- 内容包含图片时，确保图片为公开可访问的 URL（飞书 API 无法直接上传本地图片）
+- API 文档大小有限制，超长内容（>100 页）建议拆分为多个文档
+- 始终返回文档 URL 供用户访问
 
 ## Legacy Skill Migration
 
-This skill replaces the following older skills:
+本技能替代以下旧技能：
 
 | Old Skill | Replaced By | Reason |
 |-----------|-------------|--------|
@@ -135,7 +95,14 @@ This skill replaces the following older skills:
 | `feishu-wiki-doc-creator` | `feishu-doc-creator` | Unified API |
 | `feishu-wiki-child-creator` | `feishu-doc-creator` | Unified API |
 
-## About
+## Related Skills
 
-Part of the Feishu automation toolkit by UniqueClub.
+- **feishu-doc-orchestrator** — 完整文档编排流程（解析→创建→添加块→验证→日志）
+- **feishu-doc-converter** — 飞书文档与 Markdown/PDF 格式互转
+- **feishu-wiki-orchestrator** — 知识库空间和节点的批量操作
+- **feishu-pdf-downloader** — 导出飞书文档为 PDF
+
+## About UniqueClub
+
+Part of the UniqueClub toolkit.
 🌐 https://uniqueclub.ai

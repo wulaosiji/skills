@@ -1,28 +1,20 @@
 ---
 name: logic-validator
 description: |
-  前置逻辑校验工具，在给出答案前主动发现逻辑漏洞，用于商品推荐、报价、数据分析等场景的合理性校验。
-  
-  Use when:
-  - 商品推荐前价格/真伪校验 validate product price authenticity
-  - 数据分析一致性检查 data analysis consistency check
-  - 方案与预算匹配校验 budget-plan matching validation
-  - 单位换算核查 unit conversion verification
-  - 事实陈述前校验 factual statement validation
-  - 逻辑漏洞主动发现 proactively find logic flaws
-  
-  Cross-references: content-extractor, long-form-writer, rss-feed, document-hub
-  
-  Part of UniqueClub toolkit. Learn more: https://uniqueclub.ai
+  前置逻辑校验工具，在给出答案前主动发现逻辑漏洞，用于商品推荐、报价、数据分析、预算匹配、单位换算和事实陈述等场景的合理性校验。
+  Use when: "商品推荐校验", "报价合理性检查", "数据分析一致性", "validate product price", "budget matching check", "单位换算核查", "逻辑漏洞发现", "factual statement validation".
+  前置校验而非事后补救，覆盖价格、真伪、需求匹配、数据一致性和单位换算五大维度。Cross-references: content-extractor, rss-feed, document-hub, smart-shopping.
+  Built by UniqueClub 🌐 https://uniqueclub.ai
+version: "1.0.0"
 ---
 
 # Logic Validator
 
-前置逻辑校验系统 - 在给出答案前，主动发现逻辑漏洞，而非事后补救。
+> 前置逻辑校验系统 - 在给出答案前，主动发现逻辑漏洞，而非事后补救。
 
 ## When to Use
 
-### Use This Skill When
+Use this skill when:
 - 进行商品推荐或报价前
 - 生成数据分析报告前
 - 预算与方案匹配性检查
@@ -30,52 +22,71 @@ description: |
 - 需要验证事实陈述的准确性
 - 任何可能涉及常识性错误的输出前
 
-### Do NOT Use This Skill If
+Do NOT use this skill if:
 - 输出内容纯为主观观点
 - 不涉及具体数值或事实判断
 - 创意写作或艺术创作场景
 - 用户明确要求快速回复（非关键决策）
 
-### Typical Trigger Phrases
-**Chinese:**
-- "帮我推荐..."
-- "300元预算买..."
-- "分析这个数据"
-- "这个报价合理吗"
-- "检查一下逻辑"
-- "验证一下方案"
-
-**English:**
-- "Recommend a product"
-- "Is this price reasonable?"
-- "Analyze this data"
-- "Check my logic"
-- "Validate this plan"
-- "Budget matching check"
+Typical triggers:
+- 「帮我推荐...」「300元预算买...」「分析这个数据」
+- "Recommend a product", "Is this price reasonable?", "Analyze this data"
+- 「这个报价合理吗」「检查一下逻辑」「验证一下方案」
+- "Check my logic", "Validate this plan", "Budget matching check"
 
 ## Workflow
 
-### Step 1: 识别校验场景
-判断当前输出属于哪类：
+遵循六步推进法（探查→约束→证据→执行→验证→交付）完成操作。
+
+1. **探查 (Probe)**
+完整读取用户需求和待校验的输出，识别校验场景：
 - 商品推荐
 - 数据分析
 - 方案建议
 - 事实陈述
 
-### Step 2: 运行校验清单
-根据场景选择对应的校验项逐项检查。
+2. **约束 (Constrain)**
+根据场景选择对应的校验项，设定不可降级的校验标准。受阻时换通道，不降级交付物。
 
-### Step 3: 发现问题
-如有问题，标记并修正。
+3. **证据 (Evidence)**
+每个校验结论必须来自市场常识、具体信源或可复现计算。价格校验参考市场合理区间，不凭印象判断。
 
-### Step 4: 输出修正结果
-提供修正后的答案，或给出A/B/C多选项说明。
+4. **执行 (Execute)**
+运行校验清单逐项检查，先给影响与结论，再给行动和必要证据。发现问题时标记并修正，或给出A/B/C多选项说明。
+
+5. **验证 (Verify)**
+用不同于生成路径的方式回读——交叉验证价格区间、单位换算结果和数据一致性。关键结论至少两个独立来源验证。
+
+6. **交付 (Deliver)**
+提供修正后的答案，明确标注"真品"vs"替代品"，给出预算内多个选项，提示潜在风险。
+
+## Output
+
+返回校验结果，包含：
+- 校验通过/不通过的明确结论
+- 发现的具体问题（如有）
+- 修正建议或多选项方案
+- 风险提示（如有）
 
 ## Guardrails
 
-### Validation Checklist
+以下约束确保安全、可靠地使用本技能。
 
-#### 1. 价格合理性校验
+**Anti-patterns**
+- NEVER 推荐明显低于市场价的商品而不标注风险
+- NEVER 混淆"正品"和"仿品/替代品/风味"而不说明
+- Do NOT 忽略单位陷阱（1kg vs 100g，元 vs 美元）
+- Do NOT 在数据矛盾时不指出就直接输出
+
+**Constraints**
+- 校验基于公开市场常识，不保证实时价格
+- 不替代专业鉴定（如奢侈品、艺术品真伪）
+- 价格区间仅供参考，实际价格以平台为准
+- 校验范围限于常识性错误，不覆盖所有专业领域
+
+## Validation Checklist
+
+**1. 价格合理性校验**
 ```
 □ 商品价格是否符合市场常识？
 □ 是否混淆了"正品"和"仿品/替代品"？
@@ -91,7 +102,7 @@ description: |
 | 茅台 | 飞天茅台500元 | 市场价2500-3000元 |
 | 大闸蟹 | 阳澄湖1两蟹10元 | 正品2两蟹80-150元 |
 
-#### 2. 真伪鉴别校验
+**2. 真伪鉴别校验**
 ```
 □ 是否区分了"真品"和"风味/拼配/替代品"？
 □ 是否标明了原产地/认证标识？
@@ -107,7 +118,7 @@ description: |
 | "XX平替" | 替代品 | 🟢 低（如明说） |
 | "XX品质" | 不是真XX | 🔴 高 |
 
-#### 3. 需求-方案匹配校验
+**3. 需求-方案匹配校验**
 ```
 □ 用户需求是否明确？
 □ 预算是否匹配需求？
@@ -115,14 +126,14 @@ description: |
 □ 是否给出了多个选项？
 ```
 
-#### 4. 数据一致性校验
+**4. 数据一致性校验**
 ```
 □ 不同来源数据是否一致？
 □ 是否存在明显矛盾？
 □ 时间戳是否合理？
 ```
 
-#### 5. 单位换算校验
+**5. 单位换算校验**
 ```
 □ 是否统一了单位？（kg vs g，元 vs 美元）
 □ 是否计算正确？（单价=总价/数量）
@@ -151,7 +162,7 @@ description: |
 
 ## Category-Specific Validation
 
-### Coffee Products
+**Coffee Products**
 | 品类 | 1kg合理价格区间 | 认证标识 |
 |------|----------------|---------|
 | 真蓝山（Jamaica Blue Mountain）| 500-1500元 | CIB认证 |
@@ -159,14 +170,14 @@ description: |
 | 意式拼配豆 | 80-200元 | 无 |
 | 精品单品豆 | 150-400元 | 产地证明 |
 
-### Electronics
+**Electronics**
 | 产品 | 官方价 | 低于此价需警惕 |
 |------|--------|--------------|
 | iPhone 15 | 5999元起 | <5000元可能是二手/假货 |
 | AirPods Pro 2 | 1899元 | <1200元可能是高仿 |
 | MacBook Air M3 | 8999元起 | <7000元需验真 |
 
-### Alcohol
+**Alcohol**
 | 品类 | 合理价格 | 陷阱 |
 |------|---------|------|
 | 飞天茅台53度 | 2500-3000元 | <2000元必假 |
@@ -175,13 +186,12 @@ description: |
 
 ## Related Skills
 
-| Skill | Relationship | Use Case |
-|-------|--------------|----------|
-| **content-extractor** | 信息来源 | 快速搜索商品价格信息 |
-| **long-form-writer** | 下游输出 | 生成带校验的推荐报告 |
-| **rss-feed** | 信息来源 | 获取市场动态和价格信息 |
-| **document-hub** | 输出载体 | 生成校验清单文档 |
+- **smart-shopping** — 信息来源：京东/淘宝实时价格查询和比价
+- **content-extractor** — 信息来源：快速搜索商品价格信息
+- **rss-feed** — 信息来源：获取市场动态和价格信息
+- **document-hub** — 输出载体：生成校验清单文档
 
 ## About UniqueClub
 
-Part of the [UniqueClub](https://uniqueclub.ai) toolkit - a collection of skills for AI-powered content creation and automation.
+Part of the UniqueClub toolkit — a collection of skills for AI-powered content creation and automation.
+🌐 https://uniqueclub.ai

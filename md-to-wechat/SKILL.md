@@ -2,27 +2,19 @@
 name: md-to-wechat
 description: |
   Markdown转微信公众号HTML工具，支持全内联样式、系统字体栈、丰富组件、自定义主题色和元数据，生成微信公众号编辑器兼容的HTML。
-  
-  Use when:
-  - Markdown转公众号HTML Markdown to WeChat HTML
-  - 公众号文章排版 WeChat article formatting
-  - 自定义主题色文章 custom theme colors
-  - 批量生成公众号内容 batch WeChat content generation
-  - 技术文章发公众号 publish tech articles to WeChat
-  - 公众号样式组件 WeChat style components
-  
-  Cross-references: content-extractor, long-form-writer, document-hub, wechat-article-fetcher, image-ocr
-  
-  Part of UniqueClub toolkit. Learn more: https://uniqueclub.ai
+  Use when: "Markdown转公众号", "生成公众号HTML", "公众号排版工具", "发微信公众号", "公众号样式", "Markdown to WeChat", "WeChat article formatting", "WeChat HTML", "custom theme colors", "WeChat publishing".
+  Cross-references: long-form-writer, image-ocr, infographic-generator.
+  Built by UniqueClub 🌐 https://uniqueclub.ai
+version: "1.0.0"
 ---
 
 # Markdown to WeChat HTML
 
-将Markdown格式的文章转换为微信公众号编辑器兼容的HTML格式。
+> 将Markdown格式的文章转换为微信公众号编辑器兼容的HTML格式。
 
 ## When to Use
 
-### Use This Skill When
+Use this skill when:
 - 需要将Markdown文章发布到微信公众号
 - 需要自定义公众号文章的主题色
 - 生成带样式的公众号HTML内容
@@ -30,33 +22,27 @@ description: |
 - 需要场景卡片、结论框等特殊组件
 - 确保公众号文章在各平台显示一致
 
-### Do NOT Use This Skill If
+Do NOT use this skill if:
 - 需要复杂的交互式排版
 - 图片需要直接嵌入（微信不支持外部图片URL）
 - 需要动态内容或脚本
 - 文章超过2万字（微信建议限制）
 
-### Typical Trigger Phrases
-**Chinese:**
-- "Markdown转公众号"
-- "生成公众号HTML"
-- "公众号排版工具"
-- "发微信公众号"
-- "微信文章转换"
-- "公众号样式"
-
-**English:**
-- "Markdown to WeChat"
-- "Generate WeChat HTML"
-- "WeChat article formatter"
-- "Convert to WeChat format"
-- "WeChat publishing tool"
-- "WeChat style conversion"
+Typical triggers:
+- 「Markdown转公众号」「生成公众号HTML」「公众号排版工具」「发微信公众号」「微信文章转换」「公众号样式」
+- "Markdown to WeChat", "Generate WeChat HTML", "WeChat article formatter", "Convert to WeChat format", "WeChat publishing tool", "WeChat style conversion"
 
 ## Workflow
 
-### Step 1: 准备Markdown内容
-编写标准Markdown格式文章：
+1. **探查 (Probe)**: 完整读取需求指定的 Markdown 输入文件，确认文章标题、副标题、作者、标签等元数据，以及目标主题色和输出路径。
+
+2. **约束 (Constrain)**: 验证输入完整性，设定边界：全内联样式（不支持CSS变量和伪元素）、文章不超过2万字、外部图片URL需上传素材库。不降级交付物。
+
+3. **证据 (Evidence)**: 每个样式组件的转换规则来自微信公众号编辑器兼容规范。Markdown 语法与公众号样式的映射关系是可复现的转换证据。
+
+4. **执行 (Execute)**: 调用转换脚本生成 HTML，先给影响与结论，再给行动和必要证据。
+
+**准备Markdown内容**
 ```markdown
 # 文章主标题
 ## 章节标题
@@ -66,7 +52,7 @@ description: |
 | 表格 | 数据 |
 ```
 
-### Step 2: 配置元数据
+**配置元数据**
 ```python
 converter = MarkdownToWechatConverter(
     title="文章标题",
@@ -76,35 +62,36 @@ converter = MarkdownToWechatConverter(
 )
 ```
 
-### Step 3: 执行转换
+**执行转换**
 ```bash
 ./skills/md-to-wechat/scripts/md-to-wechat.sh input.md -o output.html
 ```
 
-### Step 4: 验证与发布
-- 复制HTML到公众号编辑器
-- 上传图片到微信素材库
-- iOS/Android真机预览
+**命令行完整参数**
+```bash
+./skills/md-to-wechat/scripts/md-to-wechat.sh input.md \
+  -o output.html \
+  -t "文章标题" \
+  -s "副标题描述" \
+  -a "作者名称" \
+  --tags "标签1,标签2,标签3"
+```
 
-## Guardrails
+**Python API**
+```python
+from skills.md_to_wechat.md_to_wechat import MarkdownToWechatConverter
 
-### Anti-Patterns
-- ❌ 使用外部图片URL（微信不支持）
-- ❌ 文章超过2万字
-- ❌ 不测试移动端显示效果
-- ❌ 忽略微信的样式限制
+converter = MarkdownToWechatConverter(title="文章标题", subtitle="副标题", author="作者", tags=["标签1", "标签2"])
+with open('input.md', 'r', encoding='utf-8') as f:
+    markdown_text = f.read()
+html = converter.convert(markdown_text)
+with open('output.html', 'w', encoding='utf-8') as f:
+    f.write(html)
+```
 
-### Limitations
-- 不支持CSS变量和伪元素
-- 外部图片URL需上传素材库
-- 复杂表格可能显示异常
-- 部分特殊字符需转义
+5. **验证 (Verify)**: 用不同于生成路径的方式回读输出——复制HTML到公众号编辑器预览，在iOS和Android真机上检查显示效果，确认样式兼容。
 
-### Important Notes
-1. **图片处理**: 微信编辑器不支持外部图片URL，需上传到微信素材库
-2. **预览测试**: 务必在iOS和Android真机预览
-3. **字数限制**: 单篇文章建议不超过2万字
-4. **样式兼容性**: 使用全内联样式确保兼容
+6. **交付 (Deliver)**: 返回生成的 HTML 文件，提示用户上传图片到微信素材库，清理临时文件。
 
 ## Supported Markdown Syntax
 
@@ -116,171 +103,88 @@ converter = MarkdownToWechatConverter(
 | `> 引用` | 引用块（带大引号装饰） |
 | `**加粗**` | 黑色加粗文字 |
 | `` `代码` `` | 行内代码（珊瑚色） |
-| `\`\`\`代码块\`\`\`` | 深色背景代码块 |
-| `\| 表格 \|` | 精美表格（深色表头） |
+| 代码块 | 深色背景代码块 |
+| `表格` | 精美表格（深色表头） |
 | `- 列表` | 无序列表 |
 | `【场景重现】` | 场景卡片（珊瑚色边框） |
 | `【结论】` | 结论黑框（深色背景） |
 
-## Usage
-
-### Command Line
-```bash
-# 基本用法
-./skills/md-to-wechat/scripts/md-to-wechat.sh input.md
-
-# 指定输出文件
-./skills/md-to-wechat/scripts/md-to-wechat.sh input.md -o output.html
-
-# 完整参数
-./skills/md-to-wechat/scripts/md-to-wechat.sh input.md \
-  -o output.html \
-  -t "文章标题" \
-  -s "副标题描述" \
-  -a "作者名称" \
-  --tags "标签1,标签2,标签3"
-```
-
-### Python API
-```python
-from skills.md_to_wechat.md_to_wechat import MarkdownToWechatConverter
-
-# 创建转换器
-converter = MarkdownToWechatConverter(
-    title="文章标题",
-    subtitle="副标题",
-    author="作者",
-    tags=["标签1", "标签2"]
-)
-
-# 转换Markdown
-with open('input.md', 'r', encoding='utf-8') as f:
-    markdown_text = f.read()
-
-html = converter.convert(markdown_text)
-
-# 保存
-with open('output.html', 'w', encoding='utf-8') as f:
-    f.write(html)
-```
-
 ## Style Components
 
-### Chapter Heading (##)
-带金色装饰线的章节标题：
-```html
-<div style="display:flex;align-items:center;gap:12px;">
-  <div style="width:6px;height:28px;background:#d4a574;border-radius:3px;"></div>
-  <h2>章节标题</h2>
-</div>
-```
+**Chapter Heading (##)**: 带金色装饰线的章节标题。
 
-### Quote Block (>)
-带大引号装饰的引用块，支持作者署名：
+**Quote Block (>)**: 带大引号装饰的引用块，支持作者署名。
 ```markdown
 > 引用内容
 > —— 作者名称
 ```
 
-### Scene Card（【场景重现】）
-特殊标记生成珊瑚色边框的场景卡片：
-```markdown
-【场景重现】
-这里是场景描述内容...
-```
+**Scene Card（【场景重现】）**: 特殊标记生成珊瑚色边框的场景卡片。
 
-### Conclusion Box（【结论】）
-深色背景的结论框：
-```markdown
-【结论】
-这里是结论内容...
-```
+**Conclusion Box（【结论】）**: 深色背景的结论框。
 
-### Table
-标准Markdown表格转换为精美样式表格：
-```markdown
-| 项目 | 费用 | 频率 |
-|------|------|------|
-| Token | $0.003 | 持续 |
-| 服务器 | $20 | 月付 |
-```
-
-### Code Block
-深色背景的代码块，支持语法高亮：
-```markdown
-```json
-{
-  "key": "value"
-}
-```
-```
-
-## Theme Colors
-
-默认使用金色+珊瑚色主题，可自定义：
-
+**Theme Colors**: 默认使用金色+珊瑚色主题，可自定义。
 ```python
 colors = {
-    'primary': '#d4a574',      # 金色 - 主色调
-    'accent': '#e07a5f',       # 珊瑚色 - 强调色
-    'dark': '#2d3436',         # 深色 - 表格头部
-    'text': '#1a1a1a',         # 主文字
-    'text_secondary': '#666',  # 次要文字
-    'bg_light': '#f5f5f5',     # 浅灰背景
-    'bg_card': '#f8f9fa',      # 卡片背景
+    'primary': '#d4a574', 'accent': '#e07a5f', 'dark': '#2d3436',
+    'text': '#1a1a1a', 'text_secondary': '#666', 'bg_light': '#f5f5f5', 'bg_card': '#f8f9fa',
 }
-
 converter = MarkdownToWechatConverter(colors=colors)
 ```
 
-## Compatibility
+## Output
 
-- ✅ 微信公众号编辑器
-- ✅ 企业微信
-- ✅ 微信内置浏览器
-- ✅ 支持iOS/Android/Windows
+- 格式: HTML（全内联样式，微信公众号编辑器兼容）
+- 编码: UTF-8
+- 默认输出: 与输入文件同名的 `.html` 文件，或通过 `-o` 指定
+- 兼容性: 微信公众号编辑器、企业微信、微信内置浏览器、iOS/Android/Windows
 
-## Related Skills
+## Guardrails
 
-| Skill | Relationship | Use Case |
-|-------|--------------|----------|
-| **content-extractor** | 内容来源 | 提取内容后发公众号 |
-| **long-form-writer** | 内容生成 | 生成Markdown长文 |
-| **document-hub** | 格式补充 | 生成Word/PDF版本 |
-| **wechat-article-fetcher** | 反向操作 | 抓取公众号文章 |
-| **image-ocr** | 辅助识别 | 识别图片文字入文章 |
+**Anti-patterns:**
+- NEVER 使用外部图片URL（微信不支持），需上传到微信素材库
+- NEVER 文章超过2万字（微信建议限制）
+- NEVER 不测试移动端显示效果
+- NEVER 忽略微信的样式限制（不支持CSS变量和伪元素）
+- Do NOT 使用复杂表格（可能显示异常）
+
+**Limitations**
+- 不支持CSS变量和伪元素
+- 外部图片URL需上传素材库
+- 复杂表格可能显示异常
+- 部分特殊字符需转义
+
+**Important Notes**
+1. 图片处理: 微信编辑器不支持外部图片URL，需上传到微信素材库
+2. 预览测试: 务必在iOS和Android真机预览
+3. 字数限制: 单篇文章建议不超过2万字
+4. 样式兼容性: 使用全内联样式确保兼容
 
 ## Workflow Integration
 
-### Workflow: 长文 → 公众号
+**长文 → 公众号**
 ```python
 from skills.long_form_writer import expand_outline
 from skills.md_to_wechat.md_to_wechat import MarkdownToWechatConverter
 
-# 生成长文
 markdown_text = expand_outline(outline_path="outline.md")
-
-# 转换为公众号HTML
-converter = MarkdownToWechatConverter(
-    title="文章标题",
-    subtitle="副标题",
-    author="作者"
-)
+converter = MarkdownToWechatConverter(title="文章标题", subtitle="副标题", author="作者")
 html = converter.convert(markdown_text)
-
-# 保存
 with open("wechat.html", "w", encoding="utf-8") as f:
     f.write(html)
 ```
 
 ## Changelog
 
-- **v1.0.0** (2026-02-14)
-  - 初始版本
-  - 支持基础Markdown语法转换
-  - 支持场景卡片、结论框等特殊组件
-  - 支持自定义主题色
+- **v1.0.0** (2026-02-14): 初始版本，支持基础Markdown语法转换、场景卡片、结论框等特殊组件、自定义主题色
+
+## Related Skills
+
+- **long-form-writer** — 生成Markdown长文（内容生成上游）
+- **image-ocr** — 识别图片文字入文章（素材处理）
+- **infographic-generator** — 为公众号文章生成配套信息图（视觉增强）
 
 ## About UniqueClub
 
-Part of the [UniqueClub](https://uniqueclub.ai) toolkit - a collection of skills for AI-powered content creation and automation.
+Part of the UniqueClub toolkit - a collection of skills for AI-powered content creation and automation.
+🌐 https://uniqueclub.ai

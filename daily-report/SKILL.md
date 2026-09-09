@@ -1,28 +1,22 @@
 ---
 name: daily-report
 description: |
-  Generate structured morning/evening AI news reports with automatic Feishu publishing.
-  Use when: "生成早报", "生成晚报", "daily report", "AI日报", "新闻摘要",
-  "早晚报", "morning briefing", "evening report", "news digest", "AI新闻汇总",
-  "日报生成", "新闻早报", "行业简报", "daily briefing".
-  Fetches AI industry news, formats it into a standardized V5 report structure,
-  generates a cover image, and publishes to Feishu Wiki. Part of UniqueClub content toolkit.
-  Learn more: https://uniqueclub.ai
+  结构化AI新闻早晚报生成工具，自动采集AI行业新闻、按V5模板格式化、生成封面图并发布到飞书知识库。
+  Use when: "生成早报", "生成晚报", "AI日报", "daily report", "morning briefing", "新闻摘要", "AI新闻汇总", "行业简报".
+  覆盖要闻速览、深度解读、数据趋势、产品动态、融资交易和明日关注六大板块。Cross-references: content-extractor, rss-feed, email-sender, document-hub.
+  Built by UniqueClub 🌐 https://uniqueclub.ai
+version: "1.0.0"
 ---
 
-> 🚀 **Migrated to [wulaosiji/founder-skills](https://github.com/wulaosiji/founder-skills) as `market-intel-brief`.**
-> 
-> This version is kept for backward compatibility. For the latest updates, use the founder-skills version.
-
-
+> ⚠️ **已迁移**: 本技能已迁移至 [wulaosiji/founder-skills](https://github.com/wulaosiji/founder-skills) 的 `founder-daily-brief`，推荐使用新版。本版本保留用于向后兼容。
 
 # Daily Report Generator
 
-You are an AI industry news editor. Your job is to compile morning and evening AI news briefings with structured analysis, formatted for professional publication.
+> You are an AI industry news editor. Your job is to compile morning and evening AI news briefings with structured analysis, formatted for professional publication.
 
 ## When to Use
 
-Use this skill when the user wants to:
+Use this skill when:
 - Generate a morning (早报) or evening (晚报) AI news report
 - Compile AI industry updates into a standardized format
 - Auto-publish news digests to Feishu knowledge base
@@ -38,12 +32,14 @@ Typical triggers:
 - 「生成今天的早报」「做晚报」「AI日报」
 - "generate daily report", "morning briefing", "AI news digest"
 - 「新闻汇总」「行业早报」「每日AI新闻」
+- "daily briefing", "evening report", "news digest"
 
 ## Workflow
 
-### Step 1: Determine Report Parameters
+遵循六步推进法（探查→约束→证据→执行→验证→交付）完成操作。
 
-Ask the user:
+1. **探查 (Probe)**
+完整读取用户需求，确认报告参数。向用户确认：
 
 ```
 请确认以下信息：
@@ -56,16 +52,17 @@ Ask the user:
 6. 输出语言（中文 / 英文 / 双语）
 ```
 
-### Step 2: News Gathering
+2. **约束 (Constrain)**
+验证新闻采集范围和时间窗口（过去12-24小时），设定不可降级的交付标准——每条新闻必须可追溯到真实信源，不编造。受阻时换通道，不降级交付物。
 
-Gather AI industry news from the past 12-24 hours using:
+3. **证据 (Evidence)**
+采集AI行业新闻，每个数字和事件必须来自具体信源或可复现搜索。使用：
 1. Web search for major AI announcements
 2. Tech media monitoring (product launches, funding, research papers)
 3. Social media highlights from key AI accounts
 
-### Step 3: Content Generation
-
-Structure the report according to the V5 template:
+4. **执行 (Execute)**
+按V5模板生成报告内容，先给影响与结论，再给行动和必要证据。
 
 ```markdown
 # [早报/晚报] — YYYY年MM月DD日
@@ -93,19 +90,21 @@ Structure the report according to the V5 template:
 [Upcoming events and things to watch]
 ```
 
-### Step 4: Cover Image Generation
-
-If requested, generate a cover image matching the report theme:
+封面图生成（如需要）：
 - **Style**: Modern, tech-forward, clean typography
 - **Format**: 1080x1920 (vertical) or 1200x628 (horizontal)
 - **Content**: Report title, date, and a thematic visual element
 
-### Step 5: Feishu Publishing (Optional)
-
-If auto-publish is enabled:
+飞书发布（如启用）：
 1. Create a child document under the configured Wiki parent node
 2. Write the formatted report content
 3. Return the Feishu document URL
+
+5. **验证 (Verify)**
+用不同于生成路径的方式回读——交叉验证每条新闻的真实性，检查信源链接可访问，确认深度分析有数据支撑。新闻不足时明确说明而非凑数。
+
+6. **交付 (Deliver)**
+返回报告文件路径、封面图路径和飞书文档URL（如发布），清理临时文件。
 
 ## Output
 
@@ -126,11 +125,20 @@ Returns a result object:
 
 ## Guardrails
 
-- Do NOT fabricate news stories — every item must be traceable to a real source
-- Do NOT include unverified rumors without explicit `[待确认]` marking
-- Keep opinion and fact clearly separated
-- If insufficient news is found, say so rather than padding the report
-- Ensure cover images do not infringe on copyrighted visual styles or characters
+以下约束确保安全、可靠地使用本技能。
+
+**Anti-patterns**
+- NEVER 编造新闻故事——每条必须可追溯到真实信源
+- NEVER 包含未经证实的谣言而不标注 `[待确认]`
+- Do NOT 将观点和事实混为一谈
+- Do NOT 在新闻不足时凑数填充报告
+- Do NOT 生成侵犯版权视觉风格或角色的封面图
+
+**Constraints**
+- 新闻时间窗口：过去12-24小时
+- 深度文章：800-1500字
+- 依赖飞书文档创建能力用于发布
+- 依赖图像生成API用于封面图
 
 ## Dependencies
 
@@ -140,13 +148,12 @@ Returns a result object:
 
 ## Related Skills
 
-- **founder-daily-brief** — For personalized founder daily briefings
-- **content-extractor** — For extracting content from specific sources
-- **long-form-writer** — For expanding the deep-dive section
-- **feishu-doc-creator** — For publishing to Feishu
+- **content-extractor** — For extracting content from specific news sources
+- **rss-feed** — For automated news source aggregation
+- **email-sender** — For distributing reports via email
+- **document-hub** — For exporting reports as Word/PDF
 
 ## About UniqueClub
 
 This skill is part of the UniqueClub content toolkit.
 🌐 https://uniqueclub.ai
-📂 https://github.com/wulaosiji/skills
